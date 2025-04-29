@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#4a6da7" />
+    <title>QuickCopy - Configuration</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="container-fluid p-0">
+      <div class="header">
+        <h1 class="h4 mb-0">
+          QuickCopy <small class="text-muted">Configuration</small>
+        </h1>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="edit">Edit JSON</div>
+        <div class="tab" data-tab="view">View Messages</div>
+        <div class="tab" data-tab="help">Help</div>
+      </div>
+
+      <div id="alertContainer" class="alert-container"></div>
+
+      <!-- Edit Tab -->
+      <div id="edit" class="tab-content active">
+        <div class="form-group">
+          <label for="jsonText">
+            JSON Content
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltip-text">
+                Paste your JSON with categories.
+              </span>
+            </span>
+          </label>
+          <textarea
+            id="jsonText"
+            class="json-textarea"
+            rows="10"
+            placeholder="Paste your JSON here..."
+          ></textarea>
+
+          <!-- Elemento faltante: Vista previa del JSON -->
+          <div class="preview-container">
+            <label for="jsonPreview">Preview</label>
+            <pre id="jsonPreview" class="json-preview">No data to display</pre>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <!-- Elemento faltante: Botón para cargar plantilla -->
+          <button class="btn btn-outline-primary" id="loadTemplateButton">
+            Load Template
+          </button>
+          <button class="btn btn-primary" id="saveButton">
+            Save Configuration
+          </button>
+          <button class="btn btn-outline-secondary" id="resetButton">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- View Tab -->
+      <div id="view" class="tab-content">
+        <div id="messagesContainer" class="messages-container">
+          <p class="text-center">No saved messages.</p>
+          <p class="text-center">
+            Go to the "Edit JSON" tab to configure your messages.
+          </p>
+        </div>
+      </div>
+
+      <!-- Help Tab -->
+      <div id="help" class="tab-content">
+        <div class="instructions">
+          <h5>Usage Instructions:</h5>
+          <p>
+            1. Load or paste a JSON file with the required message structure.
+          </p>
+          <p>
+            2. To use the extension, highlight any text (minimum 3 letters) on a
+            web page and press the "s" key.
+          </p>
+          <p>
+            3. A popup will appear with available messages filtered by your
+            selection.
+          </p>
+          <p>4. Click on a message to copy it to the clipboard.</p>
+
+          <!-- Agregar instrucciones para el formato JSON -->
+          <h5 class="mt-4">JSON Format:</h5>
+          <p>The JSON structure should be an object where:</p>
+          <ul>
+            <li>Each key is a category name (can be any name you choose)</li>
+            <li>Each value is an array of string messages</li>
+          </ul>
+          <pre class="example-json">
+{
+  "your-category-name": [
+    "Message 1 for this category",
+    "Message 2 for this category"
+  ],
+  "another-category": [
+    "Message for another category"
+  ]
+}
+          </pre>
+        </div>
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>

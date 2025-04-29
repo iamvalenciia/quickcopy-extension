@@ -1,0 +1,50 @@
+/* QuickCopy Content Script Styles */
+#quickcopy-popup {
+  position: absolute;
+  z-index: 10000;
+  max-width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  display: none;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+}
+
+#quickcopy-popup .quickcopy-category {
+  font-weight: 500;
+  color: #4a6da7;
+  margin-bottom: 4px;
+}
+
+#quickcopy-popup .quickcopy-message {
+  padding: 6px;
+  margin-bottom: 4px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#quickcopy-popup .quickcopy-message:hover {
+  background: #f5f5f5;
+}
+
+.quickcopy-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(74, 109, 167, 0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10001;
+  transition: opacity 0.3s;
+}

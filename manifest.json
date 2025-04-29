@@ -1,27 +1,38 @@
 {
   "manifest_version": 3,
   "name": "QuickCopy",
-  "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
-  },
   "version": "1.0",
-  "description": "Support Message Assistant.",
-  "background": {
-    "service_worker": "service_worker.js",
-    "type": "module"
+  "description": "Quickly copy templated messages based on selected text",
+  "icons": {
+    "16": "./assets/icon.png",
+    "48": "./assets/icon.png",
+    "128": "./assets/icon.png"
   },
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "./src/options/index.html",
+    "default_icon": {
+      "16": "./assets/icon.png",
+      "48": "./assets/icon.png",
+      "128": "./assets/icon.png"
+    }
   },
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage",
-    "contextMenus",
-    "clipboardWrite",
-    "clipboardRead"
+  "permissions": ["storage", "clipboardWrite"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "./src/background/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["./src/content/content.js"],
+      "css": ["./src/content/content.css"],
+      "run_at": "document_idle"
+    }
   ],
-  "host_permissions": ["<all_urls>"]
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.js", "popup.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

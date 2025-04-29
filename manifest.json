@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "QuickCopy",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "version": "1.0",
+  "description": "Support Message Assistant.",
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "contextMenus",
+    "clipboardWrite",
+    "clipboardRead"
+  ],
+  "host_permissions": ["<all_urls>"]
+}

@@ -1,39 +1,83 @@
 /* QuickCopy Content Script Styles */
 #quickcopy-popup {
-  position: absolute;
+  position: fixed;
   z-index: 10000;
-  max-width: 300px;
-  max-height: 400px;
+  max-width: 600px; /* Increased from 300px */
+  width: 80%; /* Responsive width - 80% of window */
+  max-height: 70vh; /* 70% of viewport height */
   overflow-y: auto;
   background: white;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
   padding: 10px;
   display: none;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 14px;
+  backdrop-filter: blur(5px); /* Background blur effect */
 }
 
-#quickcopy-popup .quickcopy-category {
+/* Header for popup */
+.quickcopy-header {
+  margin-bottom: 12px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Container for each category */
+.quickcopy-category-container {
+  margin-bottom: 16px;
+}
+
+/* Category styling */
+.quickcopy-category {
   font-weight: 500;
   color: #4a6da7;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  font-size: 15px;
 }
 
-#quickcopy-popup .quickcopy-message {
-  padding: 6px;
-  margin-bottom: 4px;
+/* Message styling */
+.quickcopy-message {
+  padding: 10px;
+  margin-bottom: 8px;
   border: 1px solid #eee;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s;
+  line-height: 1.4;
+  background: white;
 }
 
-#quickcopy-popup .quickcopy-message:hover {
+.quickcopy-message:hover {
   background: #f5f5f5;
 }
 
+/* Empty state styling */
+.quickcopy-empty {
+  padding: 10px;
+  text-align: center;
+}
+
+/* Close button */
+.quickcopy-close-button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+}
+
+/* Notification styling */
 .quickcopy-notification {
   position: fixed;
   bottom: 20px;
@@ -47,4 +91,43 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   z-index: 10001;
   transition: opacity 0.3s;
+}
+
+.quickcopy-search-container {
+  display: flex;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 16px;
+}
+
+.quickcopy-search {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.quickcopy-clear-button {
+  margin-left: 5px;
+  cursor: pointer;
+  border: none;
+  background: #ddd;
+  border-radius: 4px;
+  width: 30px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quickcopy-highlight {
+  background-color: #ffeb3b;
+  font-weight: bold;
+}
+
+.quickcopy-results-container {
+  max-height: 400px;
+  overflow-y: auto;
 }

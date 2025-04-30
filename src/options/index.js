@@ -3,11 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const tabs = document.querySelectorAll(".tab");
   const tabContents = document.querySelectorAll(".tab-content");
   const jsonTextarea = document.getElementById("jsonText");
-  const jsonPreview = document.getElementById("jsonPreview");
   const saveButton = document.getElementById("saveButton");
   const resetButton = document.getElementById("resetButton");
-  const loadTemplateButton = document.getElementById("loadTemplateButton");
-  const alertContainer = document.getElementById("alertContainer");
   const messagesContainer = document.getElementById("messagesContainer");
 
   // Global variables
@@ -44,70 +41,22 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       const jsonText = jsonTextarea.value.trim();
 
-      if (!jsonText) {
-        jsonPreview.textContent = "No data to display";
-        saveButton.disabled = true;
-        return;
-      }
-
       jsonData = JSON.parse(jsonText);
 
       // Validate JSON structure
       if (!validateJsonStructure(jsonData)) {
-        showAlert(
+        showNotification(
           "JSON has incorrect structure. Please check the Help section for correct format.",
-          "danger"
+          "error"
         );
         saveButton.disabled = true;
         return;
       }
-
-      // Show preview
-      jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
-      saveButton.disabled = false;
-      showAlert(
-        'Valid JSON. Click "Save Configuration" to apply changes.',
-        "success"
-      );
     } catch (error) {
-      showAlert("Error parsing JSON: " + error.message, "danger");
-      jsonPreview.textContent = "No data to display";
+      showNotification("Error parsing JSON: " + error.message, "error");
       saveButton.disabled = true;
     }
   });
-
-  // Load template button - add passive: true to improve performance
-  loadTemplateButton.addEventListener(
-    "click",
-    () => {
-      const templateJson = {
-        "tax-pending-task": [
-          "The tax team is currently reviewing your case.",
-          "Your tax request is in the verification process.",
-        ],
-        "tax-on-hold": [
-          "Your tax case is on hold due to pending documentation.",
-          "We need additional information to continue with your tax process.",
-        ],
-        banking: [
-          "Your banking application is being processed.",
-          "Funds will be deposited within 2-3 business days.",
-        ],
-        "banking-on-hold": [
-          "The nearest office is located at 123 Main St.",
-          "Our hours of operation are Monday to Friday 9am to 5pm.",
-        ],
-        category5: ["Example message for category 5."],
-        category6: ["Example message for category 6."],
-      };
-
-      jsonTextarea.value = JSON.stringify(templateJson, null, 2);
-      // Manually trigger the input event
-      const event = new Event("input", { bubbles: true });
-      jsonTextarea.dispatchEvent(event);
-    },
-    { passive: true }
-  );
 
   // Save configuration button - add passive: true to improve performance
   saveButton.addEventListener(
@@ -116,12 +65,12 @@ document.addEventListener("DOMContentLoaded", function () {
       if (jsonData) {
         chrome.storage.local.set({ messageData: jsonData }, function () {
           if (chrome.runtime.lastError) {
-            showAlert(
+            showNotification(
               "Error saving configuration: " + chrome.runtime.lastError.message,
-              "danger"
+              "error"
             );
           } else {
-            showAlert("Configuration saved successfully!", "success");
+            showNotification("Configuration saved successfully!", "success");
             loadStoredData();
           }
         });
@@ -135,7 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "click",
     () => {
       jsonTextarea.value = "";
-      jsonPreview.textContent = "No data to display";
       saveButton.disabled = true;
     },
     { passive: true }
@@ -164,26 +112,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to show alerts
-  function showAlert(message, type) {
-    alertContainer.innerHTML = `
-        <div class="alert alert-${type}">
-          ${message}
-        </div>
-      `;
-
-    // Hide alert after 5 seconds
-    setTimeout(() => {
-      alertContainer.innerHTML = "";
-    }, 1000);
-  }
 
   // Function to load stored data
   function loadStoredData() {
     chrome.storage.local.get("messageData", function (result) {
       if (chrome.runtime.lastError) {
-        showAlert(
+        showNotification(
           "Error loading data: " + chrome.runtime.lastError.message,
-          "danger"
+          "error"
         );
         return;
       }
@@ -198,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .classList.contains("active")
         ) {
           jsonTextarea.value = JSON.stringify(jsonData, null, 2);
-          jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
           saveButton.disabled = false;
         }
 
@@ -214,72 +149,74 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Function to display stored messages
+  // Function to display stored messages (only categories with message counts)
   function displayStoredMessages() {
     if (!jsonData || Object.keys(jsonData).length === 0) {
-      messagesContainer.innerHTML = `
-          <p class="text-center">No saved messages.</p>
-          <p class="text-center">Go to the "Edit JSON" tab to configure your messages.</p>
-        `;
+      // Show empty state
+      messagesContainer.querySelector(".empty-state").style.display = "block";
+      messagesContainer.querySelector(".categories-summary").style.display =
+        "none";
       return;
     }
 
-    let html = "";
+    // Hide empty state, show categories summary
+    messagesContainer.querySelector(".empty-state").style.display = "none";
+    messagesContainer.querySelector(".categories-summary").style.display =
+      "block";
 
-    // Create accordion for each category
+    // Clear existing category cards
+    const categoryGrid = messagesContainer.querySelector(".category-grid");
+    categoryGrid.innerHTML = "";
+
+    // Get total message count
+    let totalMessages = 0;
+    for (const category in jsonData) {
+      totalMessages += jsonData[category].length;
+    }
+
+    // Create category cards
     for (const category in jsonData) {
       const messages = jsonData[category];
       if (messages.length === 0) continue;
 
       const categoryId = category.replace(/[^a-z0-9]/gi, "");
+      const formattedName = formatCategoryName(category);
 
-      html += `
-          <div class="category-section">
-            <h3>${formatCategoryName(category)} <span class="badge">${
-        messages.length
-      }</span></h3>
-            <div class="messages-list">
-        `;
+      // Create category card element
+      const categoryCard = document.createElement("div");
+      categoryCard.className = "category-card";
+      categoryCard.setAttribute("data-category", category);
 
-      // List messages
-      messages.forEach((message, index) => {
-        html += `
-            <div class="message-item" data-category="${category}" data-index="${index}">
-              ${message}
-            </div>
-          `;
-      });
+      // Set inner HTML of category card
+      categoryCard.innerHTML = `
+        <div class="category-header">
+          <h3 class="category-name">${formattedName}</h3>
+          <span class="message-count">${messages.length} message${
+        messages.length !== 1 ? "s" : ""
+      }</span>
+        </div>
+      `;
 
-      html += `
-            </div>
-          </div>
-        `;
-    }
-
-    if (html === "") {
-      html = `<p class="text-center">No messages in any category.</p>`;
-    }
-
-    messagesContainer.innerHTML = html;
-
-    // Add click event listeners to messages - with passive options for better performance
-    document.querySelectorAll(".message-item").forEach((item) => {
-      item.addEventListener(
+      // Add click event listener directly to the card
+      categoryCard.addEventListener(
         "click",
         function () {
-          const text = this.textContent.trim();
-          navigator.clipboard
-            .writeText(text)
-            .then(() => {
-              showAlert("Message copied to clipboard!", "success");
-            })
-            .catch((err) => {
-              showAlert("Failed to copy: " + err, "danger");
-            });
+          displayCategoryMessages(category);
         },
         { passive: true }
       );
-    });
+
+      // Add to grid
+      categoryGrid.appendChild(categoryCard);
+    }
+
+    // Update total count
+    const totalElement = messagesContainer.querySelector(".total-count");
+    totalElement.textContent = `${Object.keys(jsonData).length}`;
+
+    const totalMessagesElement =
+      messagesContainer.querySelector(".total-messages");
+    totalMessagesElement.textContent = `${totalMessages}`;
   }
 
   // Function to format category name
@@ -290,3 +227,59 @@ document.addEventListener("DOMContentLoaded", function () {
       .join(" ");
   }
 });
+
+/**
+ * Shows a temporary notification on the screen
+ * @param {string} text - The text to display in the notification
+ * @param {string} type - The notification type ('default', 'success', 'error')
+ * @param {number} duration - Duration in milliseconds the notification will show (optional, default: 3000ms)
+ */
+function showNotification(text, type = "default", duration = 2000) {
+  // Get the alert container element
+  const alertContainer = document.getElementById("alertContainer");
+  if (!alertContainer) {
+    console.error("Alert container element not found!");
+    return null;
+  }
+
+  // Create a new alert element
+  const alertElement = document.createElement("div");
+
+  // Set the class based on type
+  alertElement.className = "alert";
+
+  if (type === "success") {
+    alertElement.classList.add("alert-success");
+  } else if (type === "error") {
+    alertElement.classList.add("alert-danger");
+  } else {
+    alertElement.classList.add("alert-default");
+  }
+
+  // Truncate text if too long
+  const displayText = text.length > 100 ? text.substring(0, 100) + "..." : text;
+
+  // Set appropriate prefix
+  let prefix = "Notification";
+  if (type === "success") prefix = "Success";
+  if (type === "error") prefix = "Error";
+  if (text.toLowerCase().startsWith("copy")) prefix = "Copied";
+
+  // Set content
+  alertElement.textContent = `${prefix}: ${displayText}`;
+
+  // Add to container
+  alertContainer.appendChild(alertElement);
+
+  // Remove after the specified duration
+  setTimeout(() => {
+    alertElement.classList.add("alert-fade-out");
+    setTimeout(() => {
+      if (alertElement.parentNode) {
+        alertContainer.removeChild(alertElement);
+      }
+    }, 300);
+  }, duration);
+
+  return alertElement;
+}

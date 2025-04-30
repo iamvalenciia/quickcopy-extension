@@ -39,109 +39,310 @@ document.addEventListener("click", function (e) {
 });
 
 // Function to show popup with matching messages
+// Function to show popup with matching messages
 function showPopup(x, y, query) {
   // Get message data from storage
   chrome.storage.local.get("messageData", function (result) {
     if (!result.messageData) {
       popup.innerHTML = `
-        <div style="padding: 10px; text-align: center;">
+        <div class="quickcopy-empty">
           <p>No message templates found.</p>
           <p>Please configure QuickCopy in the extension options.</p>
         </div>
       `;
     } else {
       const messageData = result.messageData;
-      let matchingMessages = [];
 
-      // Find matching messages
-      for (const category in messageData) {
-        const messages = messageData[category];
+      // Create search bar
+      const searchBarHtml = `
+        <div class="quickcopy-search-container">
+          <input type="text" id="quickcopy-search" class="quickcopy-search" 
+                 value="${query}" placeholder="Search messages...">
+          <button id="quickcopy-clear-search" class="quickcopy-clear-button">×</button>
+        </div>
+      `;
 
-        // Filter messages that contain the query
-        const matches = messages.filter((message) =>
-          message.toLowerCase().includes(query)
-        );
+      // Initialize popup with search bar
+      popup.innerHTML = searchBarHtml;
 
-        if (matches.length > 0) {
-          matchingMessages.push({
-            category: formatCategoryName(category),
-            messages: matches,
-          });
-        }
+      // Populate messages
+      updateMessageResults(messageData, query);
+
+      // Add event listeners to search bar
+      const searchInput = document.getElementById("quickcopy-search");
+      const clearButton = document.getElementById("quickcopy-clear-search");
+
+      // Focus on the input and select the text
+      setTimeout(() => {
+        searchInput.focus();
+        searchInput.select();
+      }, 100);
+
+      // Prevent 's' key from triggering global shortcut when search is focused
+      searchInput.addEventListener("keydown", function (e) {
+        // Stop event propagation to prevent the global keydown listener from firing
+        e.stopPropagation();
+      });
+
+      // Update results as user types
+      searchInput.addEventListener("input", function () {
+        const newQuery = this.value.trim().toLowerCase();
+        updateMessageResults(messageData, newQuery);
+      });
+
+      // Clear search button
+      clearButton.addEventListener("click", function () {
+        searchInput.value = "";
+        searchInput.focus();
+        updateMessageResults(messageData, "");
+      });
+    }
+
+    // Position popup in the center of the screen
+    positionPopupCentered();
+
+    // Add close button
+    addCloseButton();
+  });
+}
+
+// Function to update message results
+function updateMessageResults(messageData, query) {
+  let matchingMessages = [];
+  const resultsContainer = document.createElement("div");
+  resultsContainer.className = "quickcopy-results-container";
+
+  // Remove any existing results container
+  const existingResults = popup.querySelector(".quickcopy-results-container");
+  if (existingResults) {
+    popup.removeChild(existingResults);
+  }
+
+  // Ensure query is a string (prevents errors if undefined or null)
+  query = query || "";
+
+  // If query is empty, show all messages
+  if (query === "") {
+    for (const category in messageData) {
+      matchingMessages.push({
+        category: formatCategoryName(category),
+        messages: messageData[category],
+      });
+    }
+  } else {
+    // Find matching messages for the query
+    for (const category in messageData) {
+      const messages = messageData[category];
+
+      // Filter messages that contain the query
+      const matches = messages.filter((message) =>
+        message.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (matches.length > 0) {
+        matchingMessages.push({
+          category: formatCategoryName(category),
+          messages: matches,
+        });
       }
+    }
+  }
 
-      // Populate popup
-      if (matchingMessages.length > 0) {
-        let html = `<div style="margin-bottom: 8px; font-weight: bold;">Messages for "${query}":</div>`;
+  // Populate results
+  if (matchingMessages.length > 0) {
+    matchingMessages.forEach((item) => {
+      let categoryHtml = `
+        <div class="quickcopy-category-container">
+          <div class="quickcopy-category">${item.category}</div>
+      `;
 
-        matchingMessages.forEach((item) => {
-          html += `<div style="margin-bottom: 8px;">
-            <div style="font-weight: 500; color: #4a6da7; margin-bottom: 4px;">${item.category}</div>
-          `;
+      item.messages.forEach((message) => {
+        // Highlight the query in the message if it exists
+        let highlightedMessage = message;
+        if (query) {
+          // Escape regex special characters
+          const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          // Create regex for case-insensitive global search
+          const regex = new RegExp(`(${escapedQuery})`, "gi");
+          // Replace matches with highlighted version
+          highlightedMessage = message.replace(
+            regex,
+            '<span class="quickcopy-highlight">$1</span>'
+          );
+        }
 
-          item.messages.forEach((message) => {
-            html += `
-              <div class="quickcopy-message" style="padding: 6px; margin-bottom: 4px; border: 1px solid #eee; border-radius: 4px; cursor: pointer; transition: background 0.2s;">
-                ${message}
-              </div>
-            `;
-          });
-
-          html += `</div>`;
-        });
-
-        popup.innerHTML = html;
-
-        // Add click event listeners to messages
-        const messageElements = popup.querySelectorAll(".quickcopy-message");
-        messageElements.forEach((el) => {
-          el.addEventListener("mouseover", function () {
-            this.style.background = "#f5f5f5";
-          });
-
-          el.addEventListener("mouseout", function () {
-            this.style.background = "white";
-          });
-
-          el.addEventListener("click", function () {
-            const text = this.textContent.trim();
-            copyToClipboard(text);
-            hidePopup();
-
-            // Show temporary copied notification
-            showCopiedNotification(text);
-          });
-        });
-      } else {
-        popup.innerHTML = `
-          <div style="padding: 10px; text-align: center;">
-            <p>No matching messages found for "${query}".</p>
+        categoryHtml += `
+          <div class="quickcopy-message">
+            ${highlightedMessage}
           </div>
         `;
+      });
+
+      categoryHtml += `</div>`;
+      resultsContainer.innerHTML += categoryHtml;
+    });
+  } else {
+    resultsContainer.innerHTML = `
+      <div class="quickcopy-empty">
+        <p>No matching messages found${query ? ` for "${query}"` : ""}.</p>
+      </div>
+    `;
+  }
+
+  // Add results to popup
+  popup.appendChild(resultsContainer);
+
+  // Add click event listeners to messages
+  const messageElements = popup.querySelectorAll(".quickcopy-message");
+  messageElements.forEach((el) => {
+    el.addEventListener("click", function () {
+      // Get text without the highlight spans
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = this.innerHTML;
+
+      // Remove highlight spans and get plain text
+      const highlights = tempDiv.querySelectorAll(".quickcopy-highlight");
+      highlights.forEach((span) => {
+        span.replaceWith(span.textContent);
+      });
+
+      const text = tempDiv.textContent.trim();
+      copyToClipboard(text);
+      hidePopup();
+
+      // Show temporary copied notification
+      showCopiedNotification(text);
+    });
+  });
+}
+
+// Function to update message results
+function updateMessageResults(messageData, query) {
+  let matchingMessages = [];
+  const resultsContainer = document.createElement("div");
+  resultsContainer.className = "quickcopy-results-container";
+
+  // Remove any existing results container
+  const existingResults = popup.querySelector(".quickcopy-results-container");
+  if (existingResults) {
+    popup.removeChild(existingResults);
+  }
+
+  // If query is empty, show all messages
+  if (query === "") {
+    for (const category in messageData) {
+      matchingMessages.push({
+        category: formatCategoryName(category),
+        messages: messageData[category],
+      });
+    }
+  } else {
+    // Find matching messages for the query
+    for (const category in messageData) {
+      const messages = messageData[category];
+
+      // Filter messages that contain the query
+      const matches = messages.filter((message) =>
+        message.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (matches.length > 0) {
+        matchingMessages.push({
+          category: formatCategoryName(category),
+          messages: matches,
+        });
       }
     }
+  }
 
-    // Position and show popup
-    const scrollX = window.scrollX || window.pageXOffset;
-    const scrollY = window.scrollY || window.pageYOffset;
+  // Populate results
+  if (matchingMessages.length > 0) {
+    matchingMessages.forEach((item) => {
+      let categoryHtml = `
+        <div class="quickcopy-category-container">
+          <div class="quickcopy-category">${item.category}</div>
+      `;
 
-    popup.style.left = x + scrollX + "px";
-    popup.style.top = y + scrollY + "px";
-    popup.style.display = "block";
+      item.messages.forEach((message) => {
+        // Highlight the query in the message if it exists
+        let highlightedMessage = message;
+        if (query) {
+          // Escape regex special characters
+          const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          // Create regex for case-insensitive global search
+          const regex = new RegExp(`(${escapedQuery})`, "gi");
+          // Replace matches with highlighted version
+          highlightedMessage = message.replace(
+            regex,
+            '<span class="quickcopy-highlight">$1</span>'
+          );
+        }
 
-    // Reposition if popup goes out of viewport
-    const rect = popup.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+        categoryHtml += `
+          <div class="quickcopy-message">
+            ${highlightedMessage}
+          </div>
+        `;
+      });
 
-    if (rect.right > viewportWidth) {
-      popup.style.left = viewportWidth - rect.width - 10 + scrollX + "px";
-    }
+      categoryHtml += `</div>`;
+      resultsContainer.innerHTML += categoryHtml;
+    });
+  } else {
+    resultsContainer.innerHTML = `
+      <div class="quickcopy-empty">
+        <p>No matching messages found${query ? ` for "${query}"` : ""}.</p>
+      </div>
+    `;
+  }
 
-    if (rect.bottom > viewportHeight) {
-      popup.style.top = viewportHeight - rect.height - 10 + scrollY + "px";
-    }
+  // Add results to popup
+  popup.appendChild(resultsContainer);
+
+  // Add click event listeners to messages
+  const messageElements = popup.querySelectorAll(".quickcopy-message");
+  messageElements.forEach((el) => {
+    el.addEventListener("click", function () {
+      // Get text without the highlight spans
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = this.innerHTML;
+
+      // Remove highlight spans and get plain text
+      const highlights = tempDiv.querySelectorAll(".quickcopy-highlight");
+      highlights.forEach((span) => {
+        span.replaceWith(span.textContent);
+      });
+
+      const text = tempDiv.textContent.trim();
+      copyToClipboard(text);
+      hidePopup();
+
+      // Show temporary copied notification
+      showCopiedNotification(text);
+    });
   });
+}
+
+// Function to position popup in center of screen
+function positionPopupCentered() {
+  // Show the popup to get its dimensions
+  popup.style.display = "block";
+
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const scrollX = window.scrollX || window.pageXOffset;
+  const scrollY = window.scrollY || window.pageYOffset;
+
+  const popupWidth = popup.offsetWidth;
+  const popupHeight = popup.offsetHeight;
+
+  // Calculate centered position
+  const centeredX = Math.max(0, (viewportWidth - popupWidth) / 2);
+  const centeredY = Math.max(0, (viewportHeight - popupHeight) / 2);
+
+  // Apply centered position
+  popup.style.left = centeredX + scrollX + "px";
+  popup.style.top = centeredY + scrollY + "px";
 }
 
 // Function to hide popup

@@ -44,19 +44,9 @@
             rows="10"
             placeholder="Paste your JSON here..."
           ></textarea>
-
-          <!-- Elemento faltante: Vista previa del JSON -->
-          <div class="preview-container">
-            <label for="jsonPreview">Preview</label>
-            <pre id="jsonPreview" class="json-preview">No data to display</pre>
-          </div>
         </div>
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <!-- Elemento faltante: Botón para cargar plantilla -->
-          <button class="btn btn-outline-primary" id="loadTemplateButton">
-            Load Template
-          </button>
           <button class="btn btn-primary" id="saveButton">
             Save Configuration
           </button>
@@ -69,10 +59,51 @@
       <!-- View Tab -->
       <div id="view" class="tab-content">
         <div id="messagesContainer" class="messages-container">
-          <p class="text-center">No saved messages.</p>
-          <p class="text-center">
-            Go to the "Edit JSON" tab to configure your messages.
-          </p>
+          <!-- Empty state when no messages are configured -->
+          <div class="empty-state">
+            <p class="text-center">No saved messages.</p>
+            <p class="text-center">
+              Go to the "Edit JSON" tab to configure your messages.
+            </p>
+          </div>
+
+          <!-- Categories summary view -->
+          <div class="categories-summary" style="display: none">
+            <h2 class="summary-title">Message Categories</h2>
+            <p class="summary-description">
+              Below is a summary of your configured message categories. Click on
+              a category to view and copy its messages.
+            </p>
+
+            <!-- Grid to hold category cards -->
+            <div class="category-grid">
+              <!-- Category cards will be added here dynamically -->
+            </div>
+
+            <!-- Summary of total categories and messages -->
+            <div class="total-summary">
+              <p>
+                Total: <strong class="total-count">0</strong> categories with
+                <strong class="total-messages">0</strong> messages
+              </p>
+            </div>
+          </div>
+
+          <!-- Detailed view of a single category -->
+          <div class="category-detail" style="display: none">
+            <div class="category-detail-header">
+              <button class="back-button" onclick="backToCategories()">
+                ← Back to Categories
+              </button>
+              <h2 class="category-name">Category Name</h2>
+              <span class="message-count">0 messages</span>
+            </div>
+
+            <!-- List to hold messages for the selected category -->
+            <div class="messages-list">
+              <!-- Message items will be added here dynamically -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -92,25 +123,26 @@
             selection.
           </p>
           <p>4. Click on a message to copy it to the clipboard.</p>
+        </div>
 
-          <!-- Agregar instrucciones para el formato JSON -->
-          <h5 class="mt-4">JSON Format:</h5>
+        <!-- Second Instructions Section -->
+        <div class="instructions mt-4">
+          <h5>JSON Format:</h5>
           <p>The JSON structure should be an object where:</p>
-          <ul>
-            <li>Each key is a category name (can be any name you choose)</li>
-            <li>Each value is an array of string messages</li>
-          </ul>
+          <p>- Each key is a category name (can be any name you choose)</p>
+          <p>- Each value is an array of string messages</p>
           <pre class="example-json">
-{
-  "your-category-name": [
-    "Message 1 for this category",
-    "Message 2 for this category"
-  ],
-  "another-category": [
-    "Message for another category"
-  ]
-}
-          </pre>
+        {
+          "your-category-name": [
+            "Message 1 for this category",
+            "Message 2 for this category"
+          ],
+          "another-category": [
+            "Message for another category"
+          ]
+        }
+            </pre
+          >
         </div>
       </div>
     </div>

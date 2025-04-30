@@ -27,7 +27,8 @@
       "exclude_matches": ["*://google.com/search*", "*://*.google.com/search*"],
       "js": ["/src/content/content.js"],
       "css": ["/src/content/content.css"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "world": "ISOLATED"
     }
   ],
   "web_accessible_resources": [
@@ -35,5 +36,6 @@
       "resources": ["assets/*", "src/content/*"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "host_permissions": ["<all_urls>"]
 }

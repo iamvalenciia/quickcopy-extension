@@ -1,6 +1,6 @@
 /* QuickCopy Content Script Styles */
 #quickcopy-popup {
-  position: fixed;
+  position: absolute;
   z-index: 10000;
   max-width: 600px; /* Increased from 300px */
   width: 80%; /* Responsive width - 80% of window */

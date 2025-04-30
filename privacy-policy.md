@@ -9,16 +9,21 @@ Thank you for choosing QuickCopy ("we," "our," or "the extension"). This Privacy
 ## Information We Collect
 
 ### User-Provided Data
+
 QuickCopy only collects and stores the following information:
+
 - Message templates that you manually configure through the extension's options page
 - Configuration settings for the extension's functionality
 
 ### Website Content
+
 - The extension temporarily processes text that you highlight on webpages to match against your saved templates
 - This processing occurs entirely on your device and is not transmitted externally
 
 ### Data Collection Limitations
+
 QuickCopy **does not** collect:
+
 - Personal identification information
 - Health information
 - Financial or payment data
@@ -32,6 +37,7 @@ QuickCopy **does not** collect:
 ## How We Use Information
 
 The information collected is used solely for:
+
 - Providing the core functionality of matching highlighted text to your saved message templates
 - Storing your custom message templates for future use
 - Improving the user experience within the extension itself
@@ -39,6 +45,7 @@ The information collected is used solely for:
 ## Data Storage
 
 All data is stored locally on your device using Chrome's built-in storage API. Specifically:
+
 - Your message templates are stored in Chrome's local storage
 - No data is transmitted to external servers or third parties
 - Your data remains on your device and is not synced across devices unless you use Chrome's built-in sync feature
@@ -50,6 +57,7 @@ We do not sell, trade, or transfer your information to outside parties. Your dat
 ## Your Rights and Choices
 
 You have complete control over your data:
+
 - You can view all stored templates through the extension's options page
 - You can modify or delete templates at any time
 - You can reset all data by clearing the extension's storage through Chrome's settings
@@ -58,6 +66,7 @@ You have complete control over your data:
 ## Security
 
 We are committed to ensuring your information is secure:
+
 - All data processing occurs locally on your device
 - No external network connections are made to transmit your data
 - The extension follows Chrome's security best practices

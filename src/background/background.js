@@ -29,21 +29,17 @@ const DEFAULT_TEMPLATES = {
  * Handles extension installation and update events
  */
 chrome.runtime.onInstalled.addListener(async (details) => {
-  console.log("Extension installed or updated:", details.reason);
-
   // Initialize message templates if not already present
   initializeMessageTemplates();
 
   // Notify content scripts and ensure they're properly installed
   notifyAllTabs({ action: "extensionValid" });
-  // reinstallContentScripts();
 });
 
 /**
  * Handles extension startup
  */
 chrome.runtime.onStartup.addListener(() => {
-  console.log("Extension started");
   notifyAllTabs({ action: "extensionValid" });
 });
 
@@ -171,43 +167,3 @@ function copyToClipboardFallback(text, sendResponse) {
     sendResponse({ success: false, error: error.message });
   }
 }
-
-/**
- * Reinstalls content scripts on existing tabs that match patterns
- * Compatible with Manifest V3
- */
-// function reinstallContentScripts() {
-//   const manifest = chrome.runtime.getManifest();
-//   const contentScripts = manifest.content_scripts || [];
-
-//   contentScripts.forEach((scriptConfig) => {
-//     if (!scriptConfig.js || !scriptConfig.matches) return;
-
-//     chrome.tabs.query({ url: scriptConfig.matches }, (tabs) => {
-//       if (chrome.runtime.lastError) {
-//         console.error("Error querying tabs:", chrome.runtime.lastError);
-//         return;
-//       }
-
-//       tabs.forEach((tab) => {
-//         scriptConfig.js.forEach((jsFile) => {
-//           chrome.scripting
-//             .executeScript({
-//               target: { tabId: tab.id },
-//               files: [jsFile],
-//             })
-//             .then(() => {
-//               chrome.tabs
-//                 .sendMessage(tab.id, { action: "extensionValid" })
-//                 .catch(() => {
-//                   // Expected to fail if content script not ready
-//                 });
-//             })
-//             .catch(() => {
-//               // Expected to fail for restricted tabs
-//             });
-//         });
-//       });
-//     });
-//   });
-// }

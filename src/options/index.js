@@ -6,6 +6,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const saveButton = document.getElementById("saveButton");
   const resetButton = document.getElementById("resetButton");
   const messagesContainer = document.getElementById("messagesContainer");
+  const alertContainer = document.getElementById("alertContainer");
+  const emptyState = messagesContainer.querySelector(".empty-state");
+  const categoriesSummary = messagesContainer.querySelector(".categories-summary");
+  const categoryGrid = messagesContainer.querySelector(".category-grid");
+  const totalElement = messagesContainer.querySelector(".total-count");
+  const totalMessagesElement = messagesContainer.querySelector(".total-messages");
 
   // Global variables
   let jsonData = null;
@@ -13,34 +19,29 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize - load stored data
   loadStoredData();
 
-  // Tab switching logic - add passive: true to improve performance
+  // Tab switching logic
   tabs.forEach((tab) => {
-    tab.addEventListener(
-      "click",
-      () => {
-        // Remove active class from all tabs and contents
-        tabs.forEach((t) => t.classList.remove("active"));
-        tabContents.forEach((c) => c.classList.remove("active"));
+    tab.addEventListener("click", () => {
+      // Remove active class from all tabs and contents
+      tabs.forEach((t) => t.classList.remove("active"));
+      tabContents.forEach((c) => c.classList.remove("active"));
 
-        // Add active class to current tab and content
-        tab.classList.add("active");
-        const tabId = tab.getAttribute("data-tab");
-        document.getElementById(tabId).classList.add("active");
+      // Add active class to current tab and content
+      tab.classList.add("active");
+      const tabId = tab.getAttribute("data-tab");
+      document.getElementById(tabId).classList.add("active");
 
-        // If view tab, display stored messages
-        if (tabId === "view") {
-          displayStoredMessages();
-        }
-      },
-      { passive: true }
-    );
+      // If view tab, display stored messages
+      if (tabId === "view") {
+        displayStoredMessages();
+      }
+    });
   });
 
-  // JSON textarea event listener - must be non-passive as we need to process input thoroughly
+  // JSON textarea event listener
   jsonTextarea.addEventListener("input", () => {
     try {
       const jsonText = jsonTextarea.value.trim();
-
       jsonData = JSON.parse(jsonText);
 
       // Validate JSON structure
@@ -58,36 +59,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Save configuration button - add passive: true to improve performance
-  saveButton.addEventListener(
-    "click",
-    () => {
-      if (jsonData) {
-        chrome.storage.local.set({ messageData: jsonData }, function () {
-          if (chrome.runtime.lastError) {
-            showNotification(
-              "Error saving configuration: " + chrome.runtime.lastError.message,
-              "error"
-            );
-          } else {
-            showNotification("Configuration saved successfully!", "success");
-            loadStoredData();
-          }
-        });
-      }
-    },
-    { passive: true }
-  );
+  // Save configuration button
+  saveButton.addEventListener("click", () => {
+    if (jsonData) {
+      chrome.storage.local.set({ messageData: jsonData }, function () {
+        if (chrome.runtime.lastError) {
+          showNotification(
+            "Error saving configuration: " + chrome.runtime.lastError.message,
+            "error"
+          );
+        } else {
+          showNotification("Configuration saved successfully!", "success");
+          loadStoredData();
+        }
+      });
+    }
+  });
 
-  // Reset button - add passive: true to improve performance
-  resetButton.addEventListener(
-    "click",
-    () => {
-      jsonTextarea.value = "";
-      saveButton.disabled = true;
-    },
-    { passive: true }
-  );
+  // Reset button
+  resetButton.addEventListener("click", () => {
+    jsonTextarea.value = "";
+    saveButton.disabled = true;
+  });
 
   // Function to validate JSON structure
   function validateJsonStructure(data) {
@@ -153,19 +146,16 @@ document.addEventListener("DOMContentLoaded", function () {
   function displayStoredMessages() {
     if (!jsonData || Object.keys(jsonData).length === 0) {
       // Show empty state
-      messagesContainer.querySelector(".empty-state").style.display = "block";
-      messagesContainer.querySelector(".categories-summary").style.display =
-        "none";
+      emptyState.style.display = "block";
+      categoriesSummary.style.display = "none";
       return;
     }
 
     // Hide empty state, show categories summary
-    messagesContainer.querySelector(".empty-state").style.display = "none";
-    messagesContainer.querySelector(".categories-summary").style.display =
-      "block";
+    emptyState.style.display = "none";
+    categoriesSummary.style.display = "block";
 
     // Clear existing category cards
-    const categoryGrid = messagesContainer.querySelector(".category-grid");
     categoryGrid.innerHTML = "";
 
     // Get total message count
@@ -211,11 +201,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Update total count
-    const totalElement = messagesContainer.querySelector(".total-count");
     totalElement.textContent = `${Object.keys(jsonData).length}`;
 
-    const totalMessagesElement =
-      messagesContainer.querySelector(".total-messages");
     totalMessagesElement.textContent = `${totalMessages}`;
   }
 

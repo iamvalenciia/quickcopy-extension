@@ -1,133 +1,210 @@
 /* QuickCopy Content Script Styles */
+:root {
+  --primary-color: #1a73e8;
+  --primary-light: #e8f0fe;
+  --text-color: #202124;
+  --text-secondary: #5f6368;
+  --border-color: #dadce0;
+  --hover-bg: #f8f9fa;
+  --header-bg: #f8f9fa;
+  --category-color: #1a73e8;
+  --close-bg: #f8f9fa;
+  --close-color: #5f6368;
+  --message-border: #e8eaed;
+  --notification-bg: #1a73e8;
+  --notification-color: white;
+  --search-bg: #f8f9fa;
+  --search-border: #dadce0;
+  --button-bg: #f8f9fa;
+  --highlight-color: #e8f0fe;
+  --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+  --shadow-md: 0 2px 6px 0 rgba(60,64,67,0.3), 0 2px 8px 1px rgba(60,64,67,0.15);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --transition: all 0.2s ease-in-out;
+}
+
 #quickcopy-popup {
   position: absolute;
   z-index: 10000;
-  max-width: 600px; /* Increased from 300px */
-  width: 80%; /* Responsive width - 80% of window */
-  max-height: 70vh; /* 70% of viewport height */
+  max-width: 600px;
+  width: 80%;
+  max-height: 70vh;
   overflow-y: auto;
   background: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
-  padding: 10px;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 16px;
   display: none;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 14px;
-  backdrop-filter: blur(5px); /* Background blur effect */
+  backdrop-filter: blur(8px);
+  transition: var(--transition);
 }
 
-/* Header for popup */
 .quickcopy-header {
-  margin-bottom: 12px;
-  font-weight: bold;
-  font-size: 16px;
-}
-
-/* Container for each category */
-.quickcopy-category-container {
   margin-bottom: 16px;
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-color);
 }
 
-/* Category styling */
+.quickcopy-category-container {
+  margin-bottom: 20px;
+}
+
 .quickcopy-category {
   font-weight: 500;
-  color: #4a6da7;
-  margin-bottom: 8px;
+  color: var(--category-color);
+  margin-bottom: 12px;
   font-size: 15px;
+  letter-spacing: 0.3px;
 }
 
-/* Message styling */
 .quickcopy-message {
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 8px;
-  border: 1px solid #eee;
-  border-radius: 4px;
+  border: 1px solid var(--message-border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background 0.2s;
-  line-height: 1.4;
+  transition: var(--transition);
+  line-height: 1.5;
   background: white;
+  color: var(--text-color);
+  font-size: 14px;
 }
 
 .quickcopy-message:hover {
-  background: #f5f5f5;
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
 }
 
-/* Empty state styling */
 .quickcopy-empty {
-  padding: 10px;
+  padding: 24px;
   text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
-/* Close button */
 .quickcopy-close-button {
   position: fixed;
-  top: 10px;
-  right: 10px;
-  width: 24px;
-  height: 24px;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: #f0f0f0;
+  background: var(--close-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  color: #555;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--close-color);
+  transition: var(--transition);
 }
 
-/* Notification styling */
+.quickcopy-close-button:hover {
+  background: var(--hover-bg);
+}
+
 .quickcopy-notification {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(74, 109, 167, 0.9);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  bottom: 24px;
+  right: 24px;
+  background: var(--notification-bg);
+  color: var(--notification-color);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 14px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
   z-index: 10001;
-  transition: opacity 0.3s;
+  transition: var(--transition);
+  max-width: 400px;
 }
 
 .quickcopy-search-container {
   display: flex;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  padding: 12px;
+  background-color: var(--search-bg);
+  border-bottom: 1px solid var(--search-border);
   margin-bottom: 16px;
+  border-radius: var(--radius-sm);
 }
 
 .quickcopy-search {
   flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   font-size: 14px;
+  background-color: white;
+  color: var(--text-color);
+  transition: var(--transition);
+}
+
+.quickcopy-search:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
 }
 
 .quickcopy-clear-button {
-  margin-left: 5px;
+  margin-left: 8px;
   cursor: pointer;
   border: none;
-  background: #ddd;
-  border-radius: 4px;
-  width: 30px;
+  background: var(--button-bg);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
   font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: var(--transition);
+}
+
+.quickcopy-clear-button:hover {
+  background: var(--hover-bg);
+  color: var(--text-color);
 }
 
 .quickcopy-highlight {
-  background-color: #ffeb3b;
-  font-weight: bold;
+  background-color: var(--highlight-color);
+  font-weight: 500;
+  padding: 0 2px;
+  border-radius: 2px;
 }
 
 .quickcopy-results-container {
   max-height: 400px;
   overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom scrollbar */
+.quickcopy-results-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.quickcopy-results-container::-webkit-scrollbar-track {
+  background: var(--search-bg);
+  border-radius: 4px;
+}
+
+.quickcopy-results-container::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.quickcopy-results-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }

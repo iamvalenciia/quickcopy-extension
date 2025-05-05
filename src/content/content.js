@@ -6,7 +6,6 @@
  */
 
 // State management
-let selectedText = "";
 let isExtensionActive = true;
 
 // DOM elements
@@ -26,16 +25,17 @@ function createPopupElement() {
  * Checks if the extension context is valid before making API calls
  */
 function isExtensionValid() {
+  if (!isExtensionActive) return false;
+  
   try {
     chrome.runtime.getURL("");
     return true;
   } catch (error) {
     if (error.message.includes("Extension context invalidated")) {
       isExtensionActive = false;
-      return false;
+      showErrorPopup("Extension was updated. Please refresh the page.");
     }
-    console.error("Extension error:", error);
-    return true;
+    return false;
   }
 }
 
@@ -43,10 +43,7 @@ function isExtensionValid() {
  * Safely executes Chrome API calls with validation
  */
 function executeSecurely(operation) {
-  if (!isExtensionValid()) {
-    showErrorPopup("Extension was updated. Please refresh the page.");
-    return false;
-  }
+  if (!isExtensionValid()) return false;
 
   try {
     return operation();
@@ -54,7 +51,6 @@ function executeSecurely(operation) {
     if (error.message.includes("Extension context invalidated")) {
       isExtensionActive = false;
       showErrorPopup("Extension was updated. Please refresh the page.");
-      return false;
     }
     throw error;
   }
@@ -370,10 +366,17 @@ function setupSearchInterface(messageData, initialQuery) {
 
   setTimeout(() => {
     searchInput.focus();
-    searchInput.select();
+    searchInput.selectionStart = searchInput.selectionEnd =
+      searchInput.value.length;
   }, 100);
 
   searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      hidePopup();
+      e.preventDefault();
+      return;
+    }
+
     e.stopPropagation();
   });
 
@@ -390,20 +393,26 @@ function setupSearchInterface(messageData, initialQuery) {
 
 // Event Listeners
 document.addEventListener("mouseup", () => {
-  selectedText = window.getSelection().toString().trim().toLowerCase();
+  const selectedText = window.getSelection().toString().trim().toLowerCase();
+  if (selectedText && selectedText.length >= 3) {
+    document.addEventListener("keydown", handleKeyDown);
+  }
 });
 
-document.addEventListener("keydown", (e) => {
+function handleKeyDown(e) {
   if (!isExtensionActive) return;
 
-  if (e.key === "s" && selectedText && selectedText.length >= 3) {
-    showPopup(e.clientX, e.clientY, selectedText);
+  if (e.key === "S" && e.shiftKey) {
+    const selectedText = window.getSelection().toString().trim().toLowerCase();
+    if (selectedText && selectedText.length >= 3) {
+      showPopup(e.clientX, e.clientY, selectedText);
+    }
   }
 
   if (e.key === "Escape") {
     hidePopup();
   }
-});
+}
 
 document.addEventListener("click", (e) => {
   if (

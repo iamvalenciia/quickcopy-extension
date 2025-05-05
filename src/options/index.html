@@ -19,42 +19,12 @@
       </div>
 
       <div class="tabs">
-        <div class="tab active" data-tab="edit">Edit JSON</div>
         <div class="tab" data-tab="view">View Messages</div>
+        <div class="tab active" data-tab="edit">Edit JSON</div>
         <div class="tab" data-tab="help">Help</div>
       </div>
 
       <div id="alertContainer" class="alert-container"></div>
-
-      <!-- Edit Tab -->
-      <div id="edit" class="tab-content active">
-        <div class="form-group">
-          <label for="jsonText">
-            JSON Content
-            <span class="tooltip">
-              <span class="help-icon">?</span>
-              <span class="tooltip-text">
-                Paste your JSON with categories.
-              </span>
-            </span>
-          </label>
-          <textarea
-            id="jsonText"
-            class="json-textarea"
-            rows="10"
-            placeholder="Paste your JSON here..."
-          ></textarea>
-        </div>
-
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button class="btn btn-primary" id="saveButton">
-            Save Configuration
-          </button>
-          <button class="btn btn-outline-secondary" id="resetButton">
-            Reset
-          </button>
-        </div>
-      </div>
 
       <!-- View Tab -->
       <div id="view" class="tab-content">
@@ -104,6 +74,36 @@
               <!-- Message items will be added here dynamically -->
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Edit Tab -->
+      <div id="edit" class="tab-content active">
+        <div class="form-group">
+          <label for="jsonText">
+            JSON Content
+            <span class="tooltip">
+              <span class="help-icon">?</span>
+              <span class="tooltip-text">
+                Paste your JSON with categories.
+              </span>
+            </span>
+          </label>
+          <textarea
+            id="jsonText"
+            class="json-textarea"
+            rows="10"
+            placeholder="Paste your JSON here..."
+          ></textarea>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn btn-primary" id="saveButton">
+            Save Configuration
+          </button>
+          <button class="btn btn-secondary" id="copyJsonButton">
+            <i class="fas fa-copy"></i> Copy JSON
+          </button>
         </div>
       </div>
 

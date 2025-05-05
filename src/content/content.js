@@ -402,7 +402,7 @@ document.addEventListener("mouseup", () => {
 function handleKeyDown(e) {
   if (!isExtensionActive) return;
 
-  if (e.key === "S" && e.shiftKey) {
+  if (e.key === "S" || e.key === "s") {
     const selectedText = window.getSelection().toString().trim().toLowerCase();
     if (selectedText && selectedText.length >= 3) {
       showPopup(e.clientX, e.clientY, selectedText);

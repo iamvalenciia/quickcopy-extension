@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const tabContents = document.querySelectorAll(".tab-content");
   const jsonTextarea = document.getElementById("jsonText");
   const saveButton = document.getElementById("saveButton");
-  const resetButton = document.getElementById("resetButton");
+  const copyJsonButton = document.getElementById("copyJsonButton");
   const messagesContainer = document.getElementById("messagesContainer");
   const alertContainer = document.getElementById("alertContainer");
   const emptyState = messagesContainer.querySelector(".empty-state");
@@ -65,21 +65,31 @@ document.addEventListener("DOMContentLoaded", function () {
       chrome.storage.local.set({ messageData: jsonData }, function () {
         if (chrome.runtime.lastError) {
           showNotification(
-            "Error saving configuration: " + chrome.runtime.lastError.message,
+            chrome.runtime.lastError.message,
             "error"
           );
         } else {
-          showNotification("Configuration saved successfully!", "success");
+          showNotification("Configuration saved!", "success");
           loadStoredData();
         }
       });
     }
   });
 
-  // Reset button
-  resetButton.addEventListener("click", () => {
-    jsonTextarea.value = "";
-    saveButton.disabled = true;
+  // Copy JSON button
+  copyJsonButton.addEventListener("click", () => {
+    if (jsonData) {
+      const jsonString = JSON.stringify(jsonData, null, 2);
+      navigator.clipboard.writeText(jsonString)
+        .then(() => {
+          showNotification("JSON copied to clipboard", "success");
+        })
+        .catch(err => {
+          showNotification(err.message, "error");
+        });
+    } else {
+      showNotification("No JSON data to copy", "error");
+    }
   });
 
   // Function to validate JSON structure
@@ -111,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
     chrome.storage.local.get("messageData", function (result) {
       if (chrome.runtime.lastError) {
         showNotification(
-          "Error loading data: " + chrome.runtime.lastError.message,
+          chrome.runtime.lastError.message,
           "error"
         );
         return;
@@ -247,13 +257,11 @@ function showNotification(text, type = "default", duration = 2000) {
   const displayText = text.length > 100 ? text.substring(0, 100) + "..." : text;
 
   // Set appropriate prefix
-  let prefix = "Notification";
-  if (type === "success") prefix = "Success";
-  if (type === "error") prefix = "Error";
+  let prefix = "";
   if (text.toLowerCase().startsWith("copy")) prefix = "Copied";
 
   // Set content
-  alertElement.textContent = `${prefix}: ${displayText}`;
+  alertElement.textContent = prefix ? `${prefix}: ${displayText}` : displayText;
 
   // Add to container
   alertContainer.appendChild(alertElement);

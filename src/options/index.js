@@ -12,9 +12,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const categoryGrid = messagesContainer.querySelector(".category-grid");
   const totalElement = messagesContainer.querySelector(".total-count");
   const totalMessagesElement = messagesContainer.querySelector(".total-messages");
+  const categoryDetail = messagesContainer.querySelector(".category-detail");
+  const addCategoryButton = document.getElementById("addCategoryButton");
+  const addMessageButton = document.getElementById("addMessageButton");
+  const categoryModal = document.getElementById("categoryModal");
+  const messageModal = document.getElementById("messageModal");
+  const categoryNameInput = document.getElementById("categoryName");
+  const messageTextInput = document.getElementById("messageText");
+  const saveCategoryButton = document.getElementById("saveCategoryButton");
+  const saveMessageButton = document.getElementById("saveMessageButton");
+  const cancelCategoryButton = document.getElementById("cancelCategoryButton");
+  const cancelMessageButton = document.getElementById("cancelMessageButton");
+  const closeButtons = document.querySelectorAll(".close-button");
+  const backButton = document.querySelector(".back-button");
 
   // Global variables
   let jsonData = null;
+  let currentCategory = null;
 
   // Initialize - load stored data
   loadStoredData();
@@ -92,6 +106,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Event Listeners
+  addCategoryButton.addEventListener("click", () => {
+    categoryNameInput.value = "";
+    categoryModal.style.display = "flex";
+  });
+
+  addMessageButton.addEventListener("click", () => {
+    messageTextInput.value = "";
+    messageModal.style.display = "flex";
+  });
+
+  saveCategoryButton.addEventListener("click", saveCategory);
+  saveMessageButton.addEventListener("click", saveMessage);
+  cancelCategoryButton.addEventListener("click", () => categoryModal.style.display = "none");
+  cancelMessageButton.addEventListener("click", () => messageModal.style.display = "none");
+  backButton.addEventListener("click", backToCategories);
+
+  closeButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      categoryModal.style.display = "none";
+      messageModal.style.display = "none";
+    });
+  });
+
   // Function to validate JSON structure
   function validateJsonStructure(data) {
     // Check if object exists and has at least one property
@@ -152,68 +190,40 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Function to display stored messages (only categories with message counts)
+  // Function to display stored messages
   function displayStoredMessages() {
     if (!jsonData || Object.keys(jsonData).length === 0) {
-      // Show empty state
       emptyState.style.display = "block";
       categoriesSummary.style.display = "none";
+      categoryDetail.style.display = "none";
       return;
     }
 
-    // Hide empty state, show categories summary
     emptyState.style.display = "none";
     categoriesSummary.style.display = "block";
+    categoryDetail.style.display = "none";
 
-    // Clear existing category cards
     categoryGrid.innerHTML = "";
-
-    // Get total message count
     let totalMessages = 0;
-    for (const category in jsonData) {
-      totalMessages += jsonData[category].length;
-    }
 
-    // Create category cards
     for (const category in jsonData) {
       const messages = jsonData[category];
-      if (messages.length === 0) continue;
+      totalMessages += messages.length;
 
-      const categoryId = category.replace(/[^a-z0-9]/gi, "");
-      const formattedName = formatCategoryName(category);
-
-      // Create category card element
       const categoryCard = document.createElement("div");
       categoryCard.className = "category-card";
       categoryCard.setAttribute("data-category", category);
-
-      // Set inner HTML of category card
       categoryCard.innerHTML = `
-        <div class="category-header">
-          <h3 class="category-name">${formattedName}</h3>
-          <span class="message-count">${messages.length} message${
-        messages.length !== 1 ? "s" : ""
-      }</span>
-        </div>
+        <div class="category-name">${formatCategoryName(category)}</div>
+        <div class="message-count">${messages.length} message${messages.length !== 1 ? "s" : ""}</div>
       `;
 
-      // Add click event listener directly to the card
-      categoryCard.addEventListener(
-        "click",
-        function () {
-          displayCategoryMessages(category);
-        },
-        { passive: true }
-      );
-
-      // Add to grid
+      categoryCard.addEventListener("click", () => displayCategoryMessages(category));
       categoryGrid.appendChild(categoryCard);
     }
 
-    // Update total count
-    totalElement.textContent = `${Object.keys(jsonData).length}`;
-
-    totalMessagesElement.textContent = `${totalMessages}`;
+    totalElement.textContent = Object.keys(jsonData).length;
+    totalMessagesElement.textContent = totalMessages;
   }
 
   // Function to format category name
@@ -222,6 +232,165 @@ document.addEventListener("DOMContentLoaded", function () {
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  }
+
+  // Function to display category messages
+  function displayCategoryMessages(category) {
+    currentCategory = category;
+    categoriesSummary.style.display = "none";
+    categoryDetail.style.display = "block";
+
+    const categoryName = categoryDetail.querySelector(".category-name");
+    const messageCount = categoryDetail.querySelector(".message-count");
+    const messagesList = categoryDetail.querySelector(".messages-list");
+    const searchInput = categoryDetail.querySelector(".category-search");
+
+    categoryName.textContent = formatCategoryName(category);
+    messageCount.textContent = `${jsonData[category].length} message${jsonData[category].length !== 1 ? "s" : ""}`;
+
+    // Clear previous search
+    searchInput.value = "";
+
+    // Function to render messages with optional filtering
+    function renderMessages(filterQuery = "") {
+      messagesList.innerHTML = "";
+      const messages = jsonData[category];
+      const filteredMessages = filterQuery
+        ? messages.filter(message => message.toLowerCase().includes(filterQuery.toLowerCase()))
+        : messages;
+
+      filteredMessages.forEach((message, index) => {
+        const messageItem = document.createElement("div");
+        messageItem.className = "message-item";
+        messageItem.innerHTML = `
+          <div class="message-text">${message}</div>
+          <div class="message-actions">
+            <button class="edit-message" data-index="${index}" title="Edit message">
+              <i class="fas fa-pen-to-square"></i>
+            </button>
+            <button class="delete-message" data-index="${index}" title="Delete message">
+              <i class="fas fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        messagesList.appendChild(messageItem);
+      });
+
+      // Update message count to show filtered count
+      messageCount.textContent = `${filteredMessages.length} message${filteredMessages.length !== 1 ? "s" : ""}`;
+
+      // Add event listeners for message actions
+      messagesList.querySelectorAll(".edit-message").forEach(button => {
+        button.addEventListener("click", (e) => {
+          const index = parseInt(e.target.closest("button").dataset.index);
+          const originalMessage = jsonData[category][index];
+          messageTextInput.value = originalMessage;
+          messageModal.style.display = "flex";
+          
+          // Remove any existing click handlers
+          const newSaveButton = saveMessageButton.cloneNode(true);
+          saveMessageButton.parentNode.replaceChild(newSaveButton, saveMessageButton);
+          
+          // Add new click handler
+          newSaveButton.addEventListener("click", () => {
+            const newMessage = messageTextInput.value.trim();
+            if (!newMessage) {
+              showNotification("Please enter a message", "error");
+              return;
+            }
+            
+            // Update the message at the specific index
+            jsonData[category][index] = newMessage;
+            saveData();
+            messageModal.style.display = "none";
+            displayCategoryMessages(category);
+          });
+        });
+      });
+
+      messagesList.querySelectorAll(".delete-message").forEach(button => {
+        button.addEventListener("click", (e) => {
+          const index = parseInt(e.target.closest("button").dataset.index);
+          if (confirm("Are you sure you want to delete this message?")) {
+            jsonData[category].splice(index, 1);
+            saveData();
+            displayCategoryMessages(category);
+          }
+        });
+      });
+    }
+
+    // Initial render
+    renderMessages();
+
+    // Add search input event listener
+    searchInput.addEventListener("input", (e) => {
+      renderMessages(e.target.value);
+    });
+  }
+
+  // Function to go back to categories view
+  function backToCategories() {
+    currentCategory = null;
+    categoryDetail.style.display = "none";
+    categoriesSummary.style.display = "block";
+    displayStoredMessages();
+  }
+
+  // Function to save a new category
+  function saveCategory() {
+    const categoryName = categoryNameInput.value.trim();
+    if (!categoryName) {
+      showNotification("Please enter a category name", "error");
+      return;
+    }
+
+    if (!jsonData) {
+      jsonData = {};
+    }
+
+    if (jsonData[categoryName]) {
+      showNotification("Category already exists", "error");
+      return;
+    }
+
+    jsonData[categoryName] = [];
+    saveData();
+    categoryModal.style.display = "none";
+    displayStoredMessages();
+  }
+
+  // Function to save a new message
+  function saveMessage() {
+    const messageText = messageTextInput.value.trim();
+    if (!messageText) {
+      showNotification("Please enter a message", "error");
+      return;
+    }
+
+    if (!currentCategory) {
+      showNotification("No category selected", "error");
+      return;
+    }
+
+    // Only add new message if we're not in edit mode
+    if (!messageModal.dataset.editMode) {
+      jsonData[currentCategory].push(messageText);
+      saveData();
+      messageModal.style.display = "none";
+      displayCategoryMessages(currentCategory);
+    }
+  }
+
+  // Function to save data to storage
+  function saveData() {
+    chrome.storage.local.set({ messageData: jsonData }, function () {
+      if (chrome.runtime.lastError) {
+        showNotification(chrome.runtime.lastError.message, "error");
+      } else {
+        showNotification("Changes saved", "success");
+      }
+    });
   }
 });
 

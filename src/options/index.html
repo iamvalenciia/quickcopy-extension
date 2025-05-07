@@ -9,6 +9,7 @@
     <meta name="theme-color" content="#4a6da7" />
     <title>QuickCopy - Configuration</title>
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   </head>
   <body>
     <div class="container-fluid p-0">
@@ -39,10 +40,15 @@
 
           <!-- Categories summary view -->
           <div class="categories-summary" style="display: none">
-            <h2 class="summary-title">Message Categories</h2>
+            <div class="categories-header">
+              <h2 class="summary-title">Message Categories</h2>
+              <button class="btn btn-primary" id="addCategoryButton">
+                <i class="fas fa-plus"></i> Add Category
+              </button>
+            </div>
             <p class="summary-description">
               Below is a summary of your configured message categories. Click on
-              a category to view and copy its messages.
+              a category to view and manage its messages.
             </p>
 
             <!-- Grid to hold category cards -->
@@ -62,16 +68,66 @@
           <!-- Detailed view of a single category -->
           <div class="category-detail" style="display: none">
             <div class="category-detail-header">
-              <button class="back-button" onclick="backToCategories()">
-                ← Back to Categories
+              <button class="btn btn-secondary back-button">
+                <i class="fas fa-arrow-left"></i> Back to Categories
               </button>
-              <h2 class="category-name">Category Name</h2>
-              <span class="message-count">0 messages</span>
+              <div class="category-info">
+                <h2 class="category-name">Category Name</h2>
+                <span class="message-count">0 messages</span>
+              </div>
+              <div class="category-actions">
+                <div class="search-container">
+                  <input type="text" class="category-search" placeholder="Search messages...">
+                </div>
+                <button class="btn btn-primary" id="addMessageButton">
+                  <i class="fas fa-plus"></i> Add Message
+                </button>
+              </div>
             </div>
 
             <!-- List to hold messages for the selected category -->
             <div class="messages-list">
               <!-- Message items will be added here dynamically -->
+            </div>
+          </div>
+
+          <!-- Add/Edit Category Modal -->
+          <div class="modal" id="categoryModal" style="display: none">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3>Add New Category</h3>
+                <button class="close-button">&times;</button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="categoryName">Category Name</label>
+                  <input type="text" id="categoryName" class="form-control" placeholder="Enter category name...">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelCategoryButton">Cancel</button>
+                <button class="btn btn-primary" id="saveCategoryButton">Save Category</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add/Edit Message Modal -->
+          <div class="modal" id="messageModal" style="display: none">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3>Add New Message</h3>
+                <button class="close-button">&times;</button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="messageText">Message Text</label>
+                  <textarea id="messageText" class="form-control" rows="3" placeholder="Enter message text..."></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelMessageButton">Cancel</button>
+                <button class="btn btn-primary" id="saveMessageButton">Save Message</button>
+              </div>
             </div>
           </div>
         </div>

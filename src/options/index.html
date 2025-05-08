@@ -9,26 +9,29 @@
     <meta name="theme-color" content="#4a6da7" />
     <title>QuickCopy - Configuration</title>
     <link rel="stylesheet" href="index.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
   </head>
   <body>
     <div class="container-fluid p-0">
       <div class="header">
         <h1 class="h4 mb-0">
-          QuickCopy <small class="text-muted">Configuration</small>
+          QuickCopy <small class="text-muted">for costumer support</small>
         </h1>
       </div>
 
       <div class="tabs">
-        <div class="tab" data-tab="view">View Messages</div>
-        <div class="tab active" data-tab="edit">Edit JSON</div>
+        <div class="tab active" data-tab="view">View Messages</div>
+        <div class="tab" data-tab="edit">Edit JSON</div>
         <div class="tab" data-tab="help">Help</div>
       </div>
 
       <div id="alertContainer" class="alert-container"></div>
 
       <!-- View Tab -->
-      <div id="view" class="tab-content">
+      <div id="view" class="tab-content active">
         <div id="messagesContainer" class="messages-container">
           <!-- Empty state when no messages are configured -->
           <div class="empty-state">
@@ -43,7 +46,7 @@
             <div class="categories-header">
               <h2 class="summary-title">Message Categories</h2>
               <button class="btn btn-primary" id="addCategoryButton">
-                <i class="fas fa-plus"></i> Add Category
+                <i class="fas fa-plus"> </i>
               </button>
             </div>
             <p class="summary-description">
@@ -68,19 +71,23 @@
           <!-- Detailed view of a single category -->
           <div class="category-detail" style="display: none">
             <div class="category-detail-header">
-              <button class="btn btn-secondary back-button">
-                <i class="fas fa-arrow-left"></i> Back to Categories
-              </button>
-              <div class="category-info">
+              <div class="back-button-container">
+                <button class="btn btn-secondary back-button">
+                  <i class="fas fa-arrow-left"></i>
+                </button>
                 <h2 class="category-name">Category Name</h2>
                 <span class="message-count">0 messages</span>
               </div>
-              <div class="category-actions">
+              <div class="category-messages-actions">
                 <div class="search-container">
-                  <input type="text" class="category-search" placeholder="Search messages...">
+                  <input
+                    type="text"
+                    class="category-search"
+                    placeholder="Search messages..."
+                  />
                 </div>
                 <button class="btn btn-primary" id="addMessageButton">
-                  <i class="fas fa-plus"></i> Add Message
+                  <i class="fas fa-plus"></i>
                 </button>
               </div>
             </div>
@@ -101,12 +108,21 @@
               <div class="modal-body">
                 <div class="form-group">
                   <label for="categoryName">Category Name</label>
-                  <input type="text" id="categoryName" class="form-control" placeholder="Enter category name...">
+                  <input
+                    type="text"
+                    id="categoryName"
+                    class="form-control"
+                    placeholder="Enter category name..."
+                  />
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelCategoryButton">Cancel</button>
-                <button class="btn btn-primary" id="saveCategoryButton">Save Category</button>
+                <button class="btn btn-secondary" id="cancelCategoryButton">
+                  Cancel
+                </button>
+                <button class="btn btn-primary" id="saveCategoryButton">
+                  Save Category
+                </button>
               </div>
             </div>
           </div>
@@ -115,26 +131,57 @@
           <div class="modal" id="messageModal" style="display: none">
             <div class="modal-content">
               <div class="modal-header">
-                <h3>Add New Message</h3>
+                <h3>Add or Edit Message</h3>
                 <button class="close-button">&times;</button>
               </div>
               <div class="modal-body">
-                <div class="form-group">
+                <div>
                   <label for="messageText">Message Text</label>
-                  <textarea id="messageText" class="form-control" rows="3" placeholder="Enter message text..."></textarea>
+                  <textarea
+                    id="messageText"
+                    class="form-control"
+                    rows="7"
+
+                    placeholder="Enter message text..."
+                  ></textarea>
                 </div>
               </div>
               <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelMessageButton">Cancel</button>
-                <button class="btn btn-primary" id="saveMessageButton">Save Message</button>
+                <button class="btn btn-secondary" id="cancelMessageButton">
+                  Cancel
+                </button>
+                <button class="btn btn-primary" id="saveMessageButton">
+                  Save Message
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Delete Confirmation Modal -->
+      <div class="modal" id="deleteModal" style="display: none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Confirm Delete</h3>
+            <button class="close-button">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure you want to delete this message?</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="cancelDeleteButton">
+              Cancel
+            </button>
+            <button class="btn btn-danger" id="confirmDeleteButton">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Edit Tab -->
-      <div id="edit" class="tab-content active">
+      <div id="edit" class="tab-content">
         <div class="form-group">
           <label for="jsonText">
             JSON Content
@@ -158,7 +205,7 @@
             Save Configuration
           </button>
           <button class="btn btn-secondary" id="copyJsonButton">
-            <i class="fas fa-copy"></i> Copy JSON
+            <i class="fas fa-copy"></i>
           </button>
         </div>
       </div>

@@ -7,12 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const copyJsonButton = document.getElementById("copyJsonButton");
   const messagesContainer = document.getElementById("messagesContainer");
   const alertContainer = document.getElementById("alertContainer");
-  const emptyState = messagesContainer.querySelector(".empty-state");
-  const categoriesSummary = messagesContainer.querySelector(".categories-summary");
-  const categoryGrid = messagesContainer.querySelector(".category-grid");
-  const totalElement = messagesContainer.querySelector(".total-count");
-  const totalMessagesElement = messagesContainer.querySelector(".total-messages");
-  const categoryDetail = messagesContainer.querySelector(".category-detail");
+  const emptyState = messagesContainer?.querySelector(".empty-state");
+  const categoriesSummary = messagesContainer?.querySelector(".categories-summary");
+  const categoryGrid = messagesContainer?.querySelector(".category-grid");
+  const totalElement = messagesContainer?.querySelector(".total-count");
+  const totalMessagesElement = messagesContainer?.querySelector(".total-messages");
+  const categoryDetail = messagesContainer?.querySelector(".category-detail");
   const addCategoryButton = document.getElementById("addCategoryButton");
   const addMessageButton = document.getElementById("addMessageButton");
   const categoryModal = document.getElementById("categoryModal");
@@ -25,10 +25,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const cancelMessageButton = document.getElementById("cancelMessageButton");
   const closeButtons = document.querySelectorAll(".close-button");
   const backButton = document.querySelector(".back-button");
+  const deleteModal = document.getElementById("deleteModal");
+  const confirmDeleteButton = document.getElementById("confirmDeleteButton");
+  const cancelDeleteButton = document.getElementById("cancelDeleteButton");
+  const messagesList = document.querySelector(".messages-list");
 
   // Global variables
   let jsonData = null;
   let currentCategory = null;
+  let pendingDelete = { category: null, index: null };
 
   // Initialize - load stored data
   loadStoredData();
@@ -48,6 +53,10 @@ document.addEventListener("DOMContentLoaded", function () {
       // If view tab, display stored messages
       if (tabId === "view") {
         displayStoredMessages();
+      }
+      // If edit tab, reload JSON data
+      else if (tabId === "edit") {
+        loadStoredData();
       }
     });
   });
@@ -107,28 +116,81 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Event Listeners
-  addCategoryButton.addEventListener("click", () => {
-    categoryNameInput.value = "";
-    categoryModal.style.display = "flex";
-  });
-
-  addMessageButton.addEventListener("click", () => {
-    messageTextInput.value = "";
-    messageModal.style.display = "flex";
-  });
-
-  saveCategoryButton.addEventListener("click", saveCategory);
-  saveMessageButton.addEventListener("click", saveMessage);
-  cancelCategoryButton.addEventListener("click", () => categoryModal.style.display = "none");
-  cancelMessageButton.addEventListener("click", () => messageModal.style.display = "none");
-  backButton.addEventListener("click", backToCategories);
-
-  closeButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      categoryModal.style.display = "none";
-      messageModal.style.display = "none";
+  if (addCategoryButton) {
+    addCategoryButton.addEventListener("click", () => {
+      if (categoryNameInput) categoryNameInput.value = "";
+      if (categoryModal) categoryModal.style.display = "flex";
     });
-  });
+  }
+
+  if (addMessageButton) {
+    addMessageButton.addEventListener("click", () => {
+      if (messageTextInput) messageTextInput.value = "";
+      if (messageModal) messageModal.style.display = "flex";
+    });
+  }
+
+  if (saveCategoryButton) {
+    saveCategoryButton.addEventListener("click", saveCategory);
+  }
+
+  if (saveMessageButton) {
+    saveMessageButton.addEventListener("click", saveMessage);
+  }
+
+  if (cancelCategoryButton) {
+    cancelCategoryButton.addEventListener("click", () => {
+      if (categoryModal) categoryModal.style.display = "none";
+    });
+  }
+
+  if (cancelMessageButton) {
+    cancelMessageButton.addEventListener("click", () => {
+      if (messageModal) messageModal.style.display = "none";
+    });
+  }
+
+  if (backButton) {
+    backButton.addEventListener("click", backToCategories);
+  }
+
+  if (closeButtons) {
+    closeButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        if (categoryModal) categoryModal.style.display = "none";
+        if (messageModal) messageModal.style.display = "none";
+        if (deleteModal) deleteModal.style.display = "none";
+      });
+    });
+  }
+
+  // Delete modal event listeners
+  if (confirmDeleteButton) {
+    confirmDeleteButton.addEventListener("click", () => {
+      if (pendingDelete.category !== null) {
+        if (pendingDelete.index !== null) {
+          // Delete single message
+          jsonData[pendingDelete.category].splice(pendingDelete.index, 1);
+          saveData();
+          displayCategoryMessages(pendingDelete.category);
+        } else {
+          // Delete entire category (cascade delete)
+          delete jsonData[pendingDelete.category];
+          saveData();
+          displayStoredMessages();
+        }
+      }
+      if (deleteModal) deleteModal.style.display = "none";
+      pendingDelete = { category: null, index: null };
+    });
+  }
+
+  if (cancelDeleteButton) {
+    cancelDeleteButton.addEventListener("click", () => {
+      if (deleteModal) deleteModal.style.display = "none";
+      pendingDelete = { category: null, index: null };
+    });
+  }
 
   // Function to validate JSON structure
   function validateJsonStructure(data) {
@@ -167,25 +229,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (result && result.messageData) {
         jsonData = result.messageData;
+        // Always set the textarea value with formatted JSON
+        jsonTextarea.value = JSON.stringify(jsonData, null, 2);
+        saveButton.disabled = false;
 
-        // Set textarea value if we're on the edit tab
-        if (
-          document
-            .querySelector('.tab[data-tab="edit"]')
-            .classList.contains("active")
-        ) {
-          jsonTextarea.value = JSON.stringify(jsonData, null, 2);
-          saveButton.disabled = false;
-        }
+        displayStoredMessages();
 
-        // If we're on the view tab, display messages
-        if (
-          document
-            .querySelector('.tab[data-tab="view"]')
-            .classList.contains("active")
-        ) {
-          displayStoredMessages();
-        }
+      } else {
+        // If no data exists, initialize with empty object
+        jsonData = {};
+        jsonTextarea.value = JSON.stringify(jsonData, null, 2);
+        saveButton.disabled = false;
       }
     });
   }
@@ -214,11 +268,78 @@ document.addEventListener("DOMContentLoaded", function () {
       categoryCard.className = "category-card";
       categoryCard.setAttribute("data-category", category);
       categoryCard.innerHTML = `
-        <div class="category-name">${formatCategoryName(category)}</div>
-        <div class="message-count">${messages.length} message${messages.length !== 1 ? "s" : ""}</div>
+        <div class="category-card-header">
+          <div class="category-name">${formatCategoryName(category)}</div>
+          <div class="message-count">${messages.length} message${messages.length !== 1 ? "s" : ""}</div>
+        </div>
+        <div class="category-messages-actions">
+          <button class="edit-category" data-category="${category}" title="Edit category">
+            <i class="fas fa-pen-to-square"></i>
+          </button>
+          <button class="delete-category" data-category="${category}" title="Delete category">
+            <i class="fas fa-trash-can"></i>
+          </button>
+        </div>
       `;
 
-      categoryCard.addEventListener("click", () => displayCategoryMessages(category));
+      categoryCard.addEventListener("click", (e) => {
+        // Don't trigger category view if clicking on action buttons
+        if (!e.target.closest('.category-actions')) {
+          displayCategoryMessages(category);
+        }
+      });
+
+      // Add event listeners for category actions
+      const editButton = categoryCard.querySelector('.edit-category');
+      const deleteButton = categoryCard.querySelector('.delete-category');
+
+      if (editButton) {
+        editButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const categoryToEdit = e.target.closest('button').dataset.category;
+          categoryNameInput.value = categoryToEdit;
+          categoryModal.style.display = "flex";
+          
+          // Remove any existing click handlers
+          const newSaveButton = saveCategoryButton.cloneNode(true);
+          saveCategoryButton.parentNode.replaceChild(newSaveButton, saveCategoryButton);
+          
+          // Add new click handler for editing
+          newSaveButton.addEventListener("click", () => {
+            const newCategoryName = categoryNameInput.value.trim();
+            if (!newCategoryName) {
+              showNotification("Please enter a category name", "error");
+              return;
+            }
+
+            if (newCategoryName !== categoryToEdit && jsonData[newCategoryName]) {
+              showNotification("Category name already exists", "error");
+              return;
+            }
+
+            // Update category name
+            const messages = jsonData[categoryToEdit];
+            delete jsonData[categoryToEdit];
+            jsonData[newCategoryName] = messages;
+            
+            saveData();
+            categoryModal.style.display = "none";
+            displayStoredMessages();
+          });
+        });
+      }
+
+      if (deleteButton) {
+        deleteButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const categoryToDelete = e.target.closest('button').dataset.category;
+          pendingDelete = { category: categoryToDelete, index: null };
+          deleteModal.querySelector('.modal-body p').textContent = 
+            `Are you sure you want to delete the category "${formatCategoryName(categoryToDelete)}" and all its messages?`;
+          deleteModal.style.display = "flex";
+        });
+      }
+
       categoryGrid.appendChild(categoryCard);
     }
 
@@ -236,6 +357,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to display category messages
   function displayCategoryMessages(category) {
+    if (!categoryDetail || !categoriesSummary || !jsonData || !jsonData[category]) return;
+    
     currentCategory = category;
     categoriesSummary.style.display = "none";
     categoryDetail.style.display = "block";
@@ -244,6 +367,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const messageCount = categoryDetail.querySelector(".message-count");
     const messagesList = categoryDetail.querySelector(".messages-list");
     const searchInput = categoryDetail.querySelector(".category-search");
+
+    if (!categoryName || !messageCount || !messagesList || !searchInput) return;
 
     categoryName.textContent = formatCategoryName(category);
     messageCount.textContent = `${jsonData[category].length} message${jsonData[category].length !== 1 ? "s" : ""}`;
@@ -254,21 +379,24 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to render messages with optional filtering
     function renderMessages(filterQuery = "") {
       messagesList.innerHTML = "";
-      const messages = jsonData[category];
+      const messages = jsonData[category] || [];
       const filteredMessages = filterQuery
         ? messages.filter(message => message.toLowerCase().includes(filterQuery.toLowerCase()))
         : messages;
 
-      filteredMessages.forEach((message, index) => {
+      filteredMessages.forEach((message, filteredIndex) => {
+        // Find the original index in the unfiltered array
+        const originalIndex = messages.indexOf(message);
+        
         const messageItem = document.createElement("div");
         messageItem.className = "message-item";
         messageItem.innerHTML = `
           <div class="message-text">${message}</div>
-          <div class="message-actions">
-            <button class="edit-message" data-index="${index}" title="Edit message">
+          <div class="category-messages-actions">
+            <button class="edit-message" data-index="${originalIndex}" title="Edit message">
               <i class="fas fa-pen-to-square"></i>
             </button>
-            <button class="delete-message" data-index="${index}" title="Delete message">
+            <button class="delete-message" data-index="${originalIndex}" title="Delete message">
               <i class="fas fa-trash-can"></i>
             </button>
           </div>
@@ -284,38 +412,39 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", (e) => {
           const index = parseInt(e.target.closest("button").dataset.index);
           const originalMessage = jsonData[category][index];
-          messageTextInput.value = originalMessage;
-          messageModal.style.display = "flex";
+          if (messageTextInput) messageTextInput.value = originalMessage;
+          if (messageModal) messageModal.style.display = "flex";
           
           // Remove any existing click handlers
-          const newSaveButton = saveMessageButton.cloneNode(true);
-          saveMessageButton.parentNode.replaceChild(newSaveButton, saveMessageButton);
-          
-          // Add new click handler
-          newSaveButton.addEventListener("click", () => {
-            const newMessage = messageTextInput.value.trim();
-            if (!newMessage) {
-              showNotification("Please enter a message", "error");
-              return;
-            }
+          if (saveMessageButton && saveMessageButton.parentNode) {
+            const newSaveButton = saveMessageButton.cloneNode(true);
+            saveMessageButton.parentNode.replaceChild(newSaveButton, saveMessageButton);
             
-            // Update the message at the specific index
-            jsonData[category][index] = newMessage;
-            saveData();
-            messageModal.style.display = "none";
-            displayCategoryMessages(category);
-          });
+            // Add new click handler
+            newSaveButton.addEventListener("click", () => {
+              const newMessage = messageTextInput.value.trim();
+              if (!newMessage) {
+                showNotification("Please enter a message", "error");
+                return;
+              }
+              
+              // Update the message at the specific index
+              jsonData[category][index] = newMessage;
+              saveData();
+              if (messageModal) messageModal.style.display = "none";
+              displayCategoryMessages(category);
+            });
+          }
         });
       });
 
+      // Add event listeners for delete buttons
       messagesList.querySelectorAll(".delete-message").forEach(button => {
         button.addEventListener("click", (e) => {
           const index = parseInt(e.target.closest("button").dataset.index);
-          if (confirm("Are you sure you want to delete this message?")) {
-            jsonData[category].splice(index, 1);
-            saveData();
-            displayCategoryMessages(category);
-          }
+          // Show custom delete modal
+          pendingDelete = { category, index };
+          if (deleteModal) deleteModal.style.display = "flex";
         });
       });
     }
@@ -356,7 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     jsonData[categoryName] = [];
     saveData();
-    categoryModal.style.display = "none";
+    if (categoryModal) categoryModal.style.display = "none";
     displayStoredMessages();
   }
 
@@ -368,7 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (!currentCategory) {
+    if (!currentCategory || !jsonData || !jsonData[currentCategory]) {
       showNotification("No category selected", "error");
       return;
     }
@@ -377,7 +506,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!messageModal.dataset.editMode) {
       jsonData[currentCategory].push(messageText);
       saveData();
-      messageModal.style.display = "none";
+      if (messageModal) messageModal.style.display = "none";
       displayCategoryMessages(currentCategory);
     }
   }

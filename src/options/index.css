@@ -2,15 +2,21 @@
 :root {
   --primary-color: #1a73e8;
   --primary-light: #e8f0fe;
+  --secondary-color: #bdc3c7;
+  --secondary-color-hover: #95a5a6;
   --text-color: #202124;
   --text-secondary: #5f6368;
   --border-color: #dadce0;
   --hover-bg: #f8f9fa;
   --header-bg: #f8f9fa;
-  --success-color: #34a853;
-  --error-color: #ea4335;
-  --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-  --shadow-md: 0 2px 6px 0 rgba(60,64,67,0.3), 0 2px 8px 1px rgba(60,64,67,0.15);
+  --success-color: #00c853;
+  --error-color: #f44336;
+  --delete-color: #e53935; /* Red color for delete/trash icons */
+  --delete-color-hover: #c62828; /* Darker red for hover state */
+  --shadow-sm: 0 1px 2px 0 rgba(60, 64, 67, 0.3),
+    0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --shadow-md: 0 2px 6px 0 rgba(60, 64, 67, 0.3),
+    0 2px 8px 1px rgba(60, 64, 67, 0.15);
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -28,14 +34,16 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
 }
 
 body {
-  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   line-height: 1.5;
   color: var(--text-color);
   background-color: #f8f9fa;
@@ -60,13 +68,14 @@ body {
 }
 
 .h4 {
-  font-weight: 500;
   margin-bottom: var(--spacing-xs);
 }
 
 .text-muted {
   color: var(--primary-light);
-  font-size: 12px;
+  font-size: 10px;
+  font-weight: 500;
+  font-style: italic;
 }
 
 /* Tabs */
@@ -106,7 +115,7 @@ body {
 /* Tab Content */
 .tab-content {
   display: none;
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   background: white;
   border-radius: 0 0 var(--radius-md) var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -117,7 +126,7 @@ body {
 }
 
 /* Form Elements */
-.form-group{
+.form-group {
   margin-bottom: var(--spacing-sm);
 }
 
@@ -133,7 +142,7 @@ label {
   padding: var(--spacing-sm);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: 13px;
   min-height: 200px;
   resize: vertical;
@@ -264,37 +273,46 @@ label {
 .category-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--spacing-md);
+  gap: var(--spacing-xs);
   margin-bottom: var(--spacing-md);
 }
 
-/* Category Card Styles */
+/* Category Card Styles - Professional Version */
 .category-card {
+  display: flex;
   background: #fff;
   border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  padding: var(--spacing-sm);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  justify-content: space-between;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .category-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  background: #f8f9fa;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
-.category-card-header {
-  margin-bottom: 12px;
+.category-card:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.1),
+    rgba(0, 0, 0, 0.05)
+  );
+  pointer-events: none;
 }
 
-.category-name {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin-bottom: 4px;
+/* Optional: Add subtle accent color on hover */
+.category-card:hover {
+  border-left: 3px solid var(--primary-color); /* Primary accent color */
 }
 
 .message-count {
@@ -323,42 +341,67 @@ label {
   color: #6c757d;
 }
 
-.category-messages-actions button:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
 .category-messages-actions .edit-category:hover {
+  background-color: var(--primary-light);
   color: #3498db;
 }
 
 .category-messages-actions .delete-category:hover {
+  background-color: var(--primary-light);
   color: #e74c3c;
 }
 
-/* Message Item Styles */
+/* Message Item Styles - Professional Version */
 .message-item {
   background: #fff;
-  border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  display: flex;
-  justify-content: space-between;
+  border-radius: 8px;
+  padding: var(--spacing-xs);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
 }
 
 .message-item:hover {
-  background: #f8f9fa;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  background: #f9f9fb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.message-item:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.15),
+    rgba(0, 0, 0, 0.02)
+  );
+  pointer-events: none;
+}
+
+/* Optional: Add subtle highlight indicator on hover */
+.message-item:hover {
+  border-left: 3px solid #5d9cec; /* Message highlight color */
 }
 
 .message-text {
   flex: 1;
-  margin-right: 12px;
+  margin-bottom: var(--spacing-xs);
   color: #2c3e50;
   font-size: 0.95rem;
   line-height: 1.4;
+  /* Line-clamp properties for multi-line ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* Show exactly 4 lines of text */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .message-item .category-messages-actions {
@@ -380,15 +423,13 @@ label {
   color: #6c757d;
 }
 
-.message-item .category-messages-actions button:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
 .message-item .category-messages-actions .edit-message:hover {
+  background-color: var(--primary-light);
   color: #3498db;
 }
 
 .message-item .category-messages-actions .delete-message:hover {
+  background-color: var(--primary-light);
   color: #e74c3c;
 }
 
@@ -403,33 +444,25 @@ label {
 }
 
 .btn-primary {
-  background: #3498db;
+  background: var(--primary-color);
   color: white;
-}
-
-.btn-primary:hover {
-  background: #2980b9;
-  transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background: #95a5a6;
-  color: white;
+  background: var(--secondary-color);
 }
 
 .btn-secondary:hover {
-  background: #7f8c8d;
-  transform: translateY(-1px);
+  background: var(--secondary-color-hover);
 }
 
 .btn-danger {
-  background: #e74c3c;
+  background: var(--delete-color);
   color: white;
 }
 
 .btn-danger:hover {
-  background: #c0392b;
-  transform: translateY(-1px);
+  background: var(--delete-color-hover);
 }
 
 /* Modal Styles */
@@ -710,15 +743,13 @@ label {
 .category-detail {
   background: white;
   border-radius: var(--radius-md);
-  padding: var(--spacing-md);
 }
 
 .category-detail-header {
-  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -726,29 +757,41 @@ label {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
 }
 
 .back-button {
   padding: 6px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--hover-bg);
   border: none;
   cursor: pointer;
   transition: var(--transition);
 }
 
 .back-button:hover {
-  background: var(--border-color);
+  background: var(--secondary-color-hover);
 }
 
 .category-detail .category-name {
-  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-color);
   margin: 0;
+  white-space: nowrap; /* Evita que el texto salte a la siguiente línea */
+  overflow: hidden; /* Oculta el contenido que sobrepasa el contenedor */
+  text-overflow: ellipsis; /* Muestra los puntos suspensivos (...) */
+  max-width: 150px;
+}
+
+.category-name {
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  white-space: nowrap; /* Evita que el texto salte a la siguiente línea */
+  overflow: hidden; /* Oculta el contenido que sobrepasa el contenedor */
+  text-overflow: ellipsis; /* Muestra los puntos suspensivos (...) */
+  max-width: 200px;
 }
 
 .category-detail .message-count {
@@ -760,6 +803,15 @@ label {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  opacity: 0;
+}
+
+.search-add-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.category-detail .category-messages-actions:hover {
   opacity: 1;
 }
 
@@ -800,6 +852,5 @@ label {
 .messages-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
 }

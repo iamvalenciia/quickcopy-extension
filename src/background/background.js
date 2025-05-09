@@ -7,22 +7,26 @@
 
 // Default message templates for initial setup
 const DEFAULT_TEMPLATES = {
-  "tax-pending-task": [
-    "The tax team is currently reviewing your case.",
-    "Your tax request is in the verification process.",
+  "welcome": [
+    "Welcome! How can I assist you today?",
+    "Hello! I'm here to help you.",
+    "Hi there! What can I do for you?",
   ],
-  "tax-on-hold": [
-    "Your tax case is on hold due to pending documentation.",
-    "We need additional information to continue with your tax process.",
+  "support": [
+    "I understand your concern. Let me help you with that.",
+    "I'll be happy to assist you with this matter.",
+    "Let me look into this for you right away.",
   ],
-  banking: [
-    "Your banking application is being processed.",
-    "Funds will be deposited within 2-3 business days.",
+  "follow-up": [
+    "Is there anything else you need help with?",
+    "Let me know if you need any clarification.",
+    "Feel free to ask if you have any questions.",
   ],
-  "banking-on-hold": [
-    "The nearest office is located at 123 Main St.",
-    "Our hours of operation are Monday to Friday 9am to 5pm.",
-  ],
+  "closing": [
+    "Thank you for your patience. Have a great day!",
+    "I'm glad I could help. Take care!",
+    "Let me know if you need anything else. Have a wonderful day!",
+  ]
 };
 
 /**

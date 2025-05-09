@@ -187,7 +187,7 @@
             <span class="tooltip">
               <span class="help-icon">?</span>
               <span class="tooltip-text">
-                Paste your JSON with categories.
+                Save your JSON file to use it on another device.
               </span>
             </span>
           </label>
@@ -211,20 +211,79 @@
 
       <!-- Help Tab -->
       <div id="help" class="tab-content">
-        <div class="instructions">
-          <h5>Usage Instructions:</h5>
-          <p>
-            1. Load or paste a JSON file with the required message structure.
-          </p>
-          <p>
-            2. To use the extension, highlight any text (minimum 3 letters) on a
-            web page and press the "s" key.
-          </p>
-          <p>
-            3. A popup will appear with available messages filtered by your
-            selection.
-          </p>
-          <p>4. Click on a message to copy it to the clipboard.</p>
+        <div class="help-container">
+          <div class="help-section main-section">
+            <div class="help-header">
+              <i class="fas fa-bolt"></i>
+              <h3>Quick Start</h3>
+            </div>
+            <div class="help-content">
+              <div class="step-list">
+                <div class="step-item">
+                  <span class="step-number">1</span>
+                  <span class="step-text">Select any text (minimum 3 characters)</span>
+                </div>
+                <div class="step-item">
+                  <span class="step-number">2</span>
+                  <span class="step-text">Press <kbd>S</kbd> to open templates</span>
+                </div>
+                <div class="step-item">
+                  <span class="step-number">3</span>
+                  <span class="step-text">Click to copy your message</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="help-grid">
+            <div class="help-section">
+              <div class="help-header">
+                <i class="fas fa-keyboard"></i>
+                <h3>Shortcuts</h3>
+              </div>
+              <div class="help-content">
+                <div class="shortcuts-grid">
+                  <div class="shortcut-item">
+                    <kbd>S</kbd>
+                    <span>Open templates</span>
+                  </div>
+                  <div class="shortcut-item">
+                    <kbd>Esc</kbd>
+                    <span>Close popup</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="help-section">
+              <div class="help-header">
+                <i class="fas fa-folder"></i>
+                <h3>Managing Messages</h3>
+              </div>
+              <div class="help-content">
+                <ul class="feature-list">
+                  <li><i class="fas fa-plus-circle"></i> Add new categories</li>
+                  <li><i class="fas fa-edit"></i> Edit messages</li>
+                  <li><i class="fas fa-search"></i> Quick search</li>
+                  <li><i class="fas fa-code"></i> JSON editing</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="help-section">
+              <div class="help-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Privacy</h3>
+              </div>
+              <div class="help-content">
+                <ul class="feature-list">
+                  <li><i class="fas fa-lock"></i> Local storage only</li>
+                  <li><i class="fas fa-server"></i> No external servers</li>
+                  <li><i class="fas fa-user-shield"></i> Private & secure</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

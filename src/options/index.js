@@ -170,14 +170,18 @@ document.addEventListener("DOMContentLoaded", function () {
       if (pendingDelete.category !== null) {
         if (pendingDelete.index !== null) {
           // Delete single message
+          const messageToDelete = jsonData[pendingDelete.category][pendingDelete.index];
           jsonData[pendingDelete.category].splice(pendingDelete.index, 1);
           saveData();
           displayCategoryMessages(pendingDelete.category);
+          showNotification(`Message deleted: "${messageToDelete.substring(0, 50)}${messageToDelete.length > 50 ? '...' : ''}"`, "success");
         } else {
           // Delete entire category (cascade delete)
+          const categoryToDelete = pendingDelete.category;
           delete jsonData[pendingDelete.category];
           saveData();
           displayStoredMessages();
+          showNotification(`Category "${formatCategoryName(categoryToDelete)}" deleted`, "success");
         }
       }
       if (deleteModal) deleteModal.style.display = "none";
@@ -343,8 +347,12 @@ document.addEventListener("DOMContentLoaded", function () {
       categoryGrid.appendChild(categoryCard);
     }
 
-    totalElement.textContent = Object.keys(jsonData).length;
-    totalMessagesElement.textContent = totalMessages;
+    if (totalElement) {
+      totalElement.textContent = Object.keys(jsonData).length;
+    }
+    if (totalMessagesElement) {
+      totalMessagesElement.textContent = totalMessages;
+    }
   }
 
   // Function to format category name
@@ -442,8 +450,11 @@ document.addEventListener("DOMContentLoaded", function () {
       messagesList.querySelectorAll(".delete-message").forEach(button => {
         button.addEventListener("click", (e) => {
           const index = parseInt(e.target.closest("button").dataset.index);
-          // Show custom delete modal
+          const messageToDelete = jsonData[category][index];
+          // Show custom delete modal with message preview
           pendingDelete = { category, index };
+          const deleteModalBody = deleteModal.querySelector('.modal-body p');
+          deleteModalBody.innerHTML = `Are you sure you want to delete this message?<br><br><strong>Preview:</strong><br><em>${messageToDelete.substring(0, 100)}${messageToDelete.length > 100 ? '...' : ''}</em>`;
           if (deleteModal) deleteModal.style.display = "flex";
         });
       });

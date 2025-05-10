@@ -68,7 +68,7 @@ body {
 }
 
 .h4 {
-  margin-bottom: var(--spacing-xs);
+  font-style: italic;
 }
 
 .text-muted {
@@ -329,6 +329,10 @@ label {
 }
 
 .category-card:hover .category-messages-actions {
+  opacity: 1;
+}
+
+.message-item:hover .category-messages-actions {
   opacity: 1;
 }
 

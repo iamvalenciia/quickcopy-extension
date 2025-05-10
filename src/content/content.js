@@ -9,17 +9,41 @@
 let isExtensionActive = true;
 
 // DOM elements
-const popupElement = createPopupElement();
+let popupElement;
 
 /**
- * Creates and initializes the popup element
+ * Loads the popup HTML and initializes the popup element
  */
-function createPopupElement() {
-  const element = document.createElement("div");
-  element.id = "quickcopy-popup";
-  document.body.appendChild(element);
-  return element;
+async function initializePopup() {
+  try {
+    const response = await fetch(chrome.runtime.getURL('src/content/popup.html'));
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Get the popup element from the loaded HTML
+    const popup = doc.getElementById('quickcopy-popup');
+    
+    // Clone the popup and append it to the current document
+    popupElement = popup.cloneNode(true);
+    document.body.appendChild(popupElement);
+    
+    // Add the styles from the loaded HTML
+    const styles = doc.getElementsByTagName('style');
+    for (const style of styles) {
+      document.head.appendChild(style.cloneNode(true));
+    }
+  } catch (error) {
+    console.error('Failed to load popup HTML:', error);
+    // Fallback to creating a basic popup element
+    popupElement = document.createElement('div');
+    popupElement.id = 'quickcopy-popup';
+    document.body.appendChild(popupElement);
+  }
 }
+
+// Initialize popup when the content script loads
+initializePopup();
 
 /**
  * Checks if the extension context is valid before making API calls

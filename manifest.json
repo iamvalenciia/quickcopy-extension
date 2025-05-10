@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "QuickCopy",
-  "version": "1.0",
-  "description": "Quickly copy templated messages based on selected text",
+  "name": "SpeedCopy",
+  "version": "1.0.1",
+  "description": "A powerful text template manager that lets you quickly access and copy pre-defined messages. Select text and press 'S' to instantly search and copy matching templates. Perfect for customer support, sales, and repetitive messaging needs.",
   "icons": {
     "16": "/assets/icon.png",
     "48": "/assets/icon.png",

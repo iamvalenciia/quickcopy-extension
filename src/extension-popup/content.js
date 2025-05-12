@@ -9,55 +9,17 @@
 let isExtensionActive = true;
 
 // DOM elements
-let popupElement;
+const popupElement = createPopupElement();
 
 /**
  * Creates and initializes the popup element
  */
-function initializePopup() {
-  // Create main popup container
-  popupElement = document.createElement('div');
-  popupElement.id = 'quickcopy-popup';
-  popupElement.style.display = 'none';
-  document.body.appendChild(popupElement);
-
-  // Create initial structure
-  popupElement.innerHTML = `
-    <div class="quickcopy-header">
-      <span>QuickCopy</span>
-      <button class="quickcopy-close-button">×</button>
-    </div>
-    <div class="quickcopy-search-container">
-      <input type="text" id="quickcopy-search" class="quickcopy-search" 
-             placeholder="Search messages...">
-    </div>
-    <div class="quickcopy-results-container"></div>
-  `;
-
-  // Add event listeners
-  const searchInput = popupElement.querySelector('#quickcopy-search');
-  const closeButton = popupElement.querySelector('.quickcopy-close-button');
-
-  if (searchInput) {
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        hidePopup();
-        e.preventDefault();
-        return;
-      }
-      e.stopPropagation();
-    });
-  }
-
-  if (closeButton) {
-    closeButton.addEventListener('click', () => {
-      hidePopup();
-    });
-  }
+function createPopupElement() {
+  const element = document.createElement("div");
+  element.id = "quickcopy-popup";
+  document.body.appendChild(element);
+  return element;
 }
-
-// Initialize popup when the content script loads
-initializePopup();
 
 /**
  * Checks if the extension context is valid before making API calls
@@ -113,10 +75,20 @@ function showErrorPopup(message) {
  */
 function positionPopupCentered() {
   popupElement.style.display = "block";
-  
-  // The CSS in the popup element (#quickcopy-popup) already handles centered positioning
-  // through position: fixed and transform: translate(-50%, -50%)
-  // So we don't need to do any manual positioning calculations
+
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const scrollX = window.scrollX || window.pageXOffset;
+  const scrollY = window.scrollY || window.pageYOffset;
+
+  const popupWidth = popupElement.offsetWidth;
+  const popupHeight = popupElement.offsetHeight;
+
+  const centeredX = Math.max(0, (viewportWidth - popupWidth) / 2);
+  const centeredY = Math.max(0, (viewportHeight - popupHeight) / 2);
+
+  popupElement.style.left = centeredX + scrollX + "px";
+  popupElement.style.top = centeredY + scrollY + "px";
 }
 
 /**
@@ -143,8 +115,11 @@ function showCopiedNotification(text) {
   document.body.appendChild(notification);
 
   setTimeout(() => {
-    document.body.removeChild(notification);
-  }, 1500);
+    notification.style.opacity = "0";
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 300);
+  }, 3000);
 }
 
 /**
@@ -292,7 +267,7 @@ function populateMatchingResults(container, categories, query) {
       let displayMessage = message;
 
       if (query) {
-        // Highlight matching text while preserving spaces
+        // Highlight matching text
         const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const regex = new RegExp(`(${escapedQuery})`, "gi");
         displayMessage = message.replace(
@@ -376,13 +351,10 @@ function showPopup(x, y, query) {
  */
 function setupSearchInterface(messageData, initialQuery) {
   const searchBarHtml = `
-    <div class="quickcopy-header">
-      <span>SpeedCopy</span>
-      <button class="quickcopy-close-button">×</button>
-    </div>
     <div class="quickcopy-search-container">
       <input type="text" id="quickcopy-search" class="quickcopy-search" 
              value="${initialQuery}" placeholder="Search messages...">
+      <button id="quickcopy-clear-search" class="quickcopy-clear-button">×</button>
     </div>
   `;
 
@@ -390,10 +362,13 @@ function setupSearchInterface(messageData, initialQuery) {
   updateMessageResults(messageData, initialQuery);
 
   const searchInput = document.getElementById("quickcopy-search");
-  const closeButton = popupElement.querySelector('.quickcopy-close-button');
+  const clearButton = document.getElementById("quickcopy-clear-search");
 
-  searchInput.focus();
-  searchInput.selectionStart = searchInput.selectionEnd = searchInput.value.length;
+  setTimeout(() => {
+    searchInput.focus();
+    searchInput.selectionStart = searchInput.selectionEnd =
+      searchInput.value.length;
+  }, 100);
 
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
@@ -401,6 +376,7 @@ function setupSearchInterface(messageData, initialQuery) {
       e.preventDefault();
       return;
     }
+
     e.stopPropagation();
   });
 
@@ -408,8 +384,10 @@ function setupSearchInterface(messageData, initialQuery) {
     updateMessageResults(messageData, this.value.trim().toLowerCase());
   });
 
-  closeButton.addEventListener('click', () => {
-    hidePopup();
+  clearButton.addEventListener("click", () => {
+    searchInput.value = "";
+    searchInput.focus();
+    updateMessageResults(messageData, "");
   });
 }
 

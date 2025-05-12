@@ -23,149 +23,131 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --transition: all 0.2s ease-in-out;
-  --spacing-md: 16px;
-  --spacing-sm: 8px;
-  --spacing-xl: 24px;
 }
 
 #quickcopy-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: absolute;
   z-index: 10000;
   max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
+  width: 80%;
+  max-height: 70vh;
   overflow-y: auto;
   background: white;
   color: var(--text-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
-  padding: 0;
+  padding: 16px;
+  display: none;
   font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 14px;
   backdrop-filter: blur(8px);
+  transition: var(--transition);
 }
 
 .quickcopy-header {
-  background: var(--primary-color);
-  color: white;
-  padding: var(--spacing-sm);
+  margin-bottom: 16px;
   font-weight: 500;
-  font-style: italic;
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
 }
 
 .quickcopy-category-container {
-  background: white;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  margin-bottom: var(--spacing-md);
-  overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .quickcopy-category {
-  font-weight: 600;
-  color: var(--primary-color);
-  padding: var(--spacing-sm) var(--spacing-md);
+  font-weight: 500;
+  color: var(--category-color);
+  margin-bottom: 12px;
   font-size: 15px;
   letter-spacing: 0.3px;
-  background: var(--primary-light);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .quickcopy-message {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-bottom: 1px solid var(--border-color);
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--message-border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: var(--transition);
   line-height: 1.5;
   background: white;
   color: var(--text-color);
   font-size: 14px;
-  display: flex;
-}
-
-.quickcopy-message:last-child {
-  border-bottom: none;
-}
-
-.quickcopy-message:active {
-  background: var(--primary-light);
 }
 
 .quickcopy-message:hover {
-  background: var(--header-bg);
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
 }
 
 .quickcopy-empty {
-  padding: var(--spacing-xl);
+  padding: 24px;
   text-align: center;
   color: var(--text-secondary);
   font-size: 14px;
-  background: var(--hover-bg);
-  margin: var(--spacing-md);
-  border-radius: var(--radius-md);
 }
 
 .quickcopy-close-button {
-  background: transparent;
-  border: none;
-  color: white;
-  width: 32px;
-  height: 32px;
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
+  background: var(--close-bg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 24px;
-  padding: 0;
-  line-height: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--close-color);
+  transition: var(--transition);
 }
 
 .quickcopy-close-button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--hover-bg);
 }
 
 .quickcopy-notification {
   position: fixed;
-  bottom: var(--spacing-md);
-  right: var(--spacing-md);
-  background: var(--primary-color);
-  color: white;
-  padding: var(--spacing-sm) var(--spacing-md);
+  bottom: 24px;
+  right: 24px;
+  background: var(--notification-bg);
+  color: var(--notification-color);
+  padding: 12px 24px;
   border-radius: var(--radius-md);
+  font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 14px;
   box-shadow: var(--shadow-md);
   z-index: 10001;
+  transition: var(--transition);
   max-width: 400px;
 }
 
 .quickcopy-search-container {
-  background: white;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--border-color);
   display: flex;
-  gap: var(--spacing-xs);
+  padding: 12px;
+  background-color: var(--search-bg);
+  border-bottom: 1px solid var(--search-border);
+  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
 }
 
 .quickcopy-search {
   flex: 1;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 8px 12px;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: 14px;
   background-color: white;
   color: var(--text-color);
   transition: var(--transition);
-  height: 40px;
 }
 
 .quickcopy-search:focus {
@@ -175,38 +157,37 @@
 }
 
 .quickcopy-clear-button {
-  background: white;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  border-radius: var(--radius-md);
-  width: 40px;
-  height: 40px;
-  font-size: 18px;
-  transition: var(--transition);
+  margin-left: 8px;
   cursor: pointer;
+  border: none;
+  background: var(--button-bg);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
 }
 
 .quickcopy-clear-button:hover {
   background: var(--hover-bg);
   color: var(--text-color);
-  border-color: var(--primary-color);
 }
 
 .quickcopy-highlight {
   background-color: var(--highlight-color);
-  color: var(--primary-color);
   font-weight: 500;
-  padding: 0 3px;
+  padding: 0 2px;
   border-radius: 2px;
-  display: inline;
-  white-space: pre-wrap;
-  word-break: keep-all;
 }
 
 .quickcopy-results-container {
-  padding: var(--spacing-md);
-  max-height: calc(80vh - 180px);
+  max-height: 400px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 /* Custom scrollbar */
@@ -215,37 +196,15 @@
 }
 
 .quickcopy-results-container::-webkit-scrollbar-track {
-  background: var(--hover-bg);
-  border-radius: var(--radius-sm);
+  background: var(--search-bg);
+  border-radius: 4px;
 }
 
 .quickcopy-results-container::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
 }
 
 .quickcopy-results-container::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
-}
-
-@keyframes notificationSlideIn {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes popupFadeIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -48%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
 }

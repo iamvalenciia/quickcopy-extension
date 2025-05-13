@@ -144,7 +144,7 @@ function showCopiedNotification(text) {
 
   setTimeout(() => {
     document.body.removeChild(notification);
-  }, 1500);
+  }, 3000);
 }
 
 /**
@@ -243,6 +243,14 @@ function updateMessageResults(messageData, query) {
 
   popupElement.appendChild(resultsContainer);
   attachMessageClickHandlers();
+}
+
+function focusSearchInput() {
+  const searchInput = document.getElementById("quickcopy-search");
+  if (searchInput) {
+    searchInput.focus();
+    searchInput.selectionStart = searchInput.selectionEnd = searchInput.value.length;
+  }
 }
 
 /**
@@ -367,6 +375,7 @@ function showPopup(x, y, query) {
       }
 
       positionPopupCentered();
+      focusSearchInput();
     });
   });
 }
@@ -388,6 +397,7 @@ function setupSearchInterface(messageData, initialQuery) {
 
   popupElement.innerHTML = searchBarHtml;
   updateMessageResults(messageData, initialQuery);
+  focusSearchInput();
 
   const searchInput = document.getElementById("quickcopy-search");
   const closeButton = popupElement.querySelector(".quickcopy-close-button");

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SwiftCopy",
-  "version": "1.0.3",
-  "description": "A powerful text template manager that lets you quickly access and copy pre-defined messages.",
+  "name": "SwiftCopy - Smart Message Template Manager",
+  "version": "1.0.5",
+  "description": "Quickly access and copy your saved messages with a simple 's' shortcut. Select text, press 's', and instantly search through your categorized message templates. Perfect for customer support, sales, and any role that requires quick access to frequently used responses.",
   "icons": {
     "16": "/assets/icon.png",
     "48": "/assets/icon.png",

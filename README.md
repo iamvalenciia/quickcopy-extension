@@ -6,7 +6,6 @@ A powerful browser extension that streamlines your workflow by providing instant
 
 ### Core Functionality
 
-- **Quick Access**: Select text and press 's' to instantly open the message search interface
 - **Smart Search**: Real-time filtering with highlighted matches as you type
 - **Category Management**: Organize messages into custom categories
 - **One-Click Copy**: Copy messages to clipboard with a single click
@@ -61,7 +60,7 @@ swiftcopy/
 └── README.md         # Documentation
 ```
 
-## 🔒 Security
+## Security
 
 - No data collection
 - Local storage only
@@ -69,6 +68,6 @@ swiftcopy/
 - Secure clipboard handling
 - Isolated execution environment
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

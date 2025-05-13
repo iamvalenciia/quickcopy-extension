@@ -2,14 +2,14 @@
   "manifest_version": 3,
   "name": "SwiftCopy - Smart Message Template Manager",
   "version": "1.0.5",
-  "description": "Quickly access and copy your saved messages with a simple 's' shortcut. Select text, press 's', and instantly search through your categorized message templates. Perfect for customer support, sales, and any role that requires quick access to frequently used responses.",
+  "description": "Select text, press 's', and instantly search/copy your saved messages. Perfect for support, sales, and quick responses.",
   "icons": {
     "16": "/assets/icon.png",
     "48": "/assets/icon.png",
     "128": "/assets/icon.png"
   },
   "action": {
-    "default_popup": "./src/options/index.html",
+    "default_popup": "./src/mainView/index.html",
     "default_icon": {
       "16": "/assets/icon.png",
       "48": "/assets/icon.png",
@@ -25,15 +25,15 @@
     {
       "matches": ["<all_urls>"],
       "exclude_matches": ["*://google.com/search*", "*://*.google.com/search*"],
-      "js": ["/src/content/content.js"],
-      "css": ["/src/content/content.css"],
+      "js": ["/src/popupView/popup.js"],
+      "css": ["/src/popupView/popup.css"],
       "run_at": "document_idle",
       "world": "ISOLATED"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["assets/*", "src/content/*"],
+      "resources": ["assets/*", "src/popupView/*"],
       "matches": ["<all_urls>"]
     }
   ],

@@ -1,10 +1,8 @@
 # SwiftCopy - Smart Message Template Manager
 
-![SwiftCopy Logo](/assets/extension-images.png)
+![SwiftCopy Logo](/assets/image.png)
 
 A powerful browser extension that streamlines your workflow by providing instant access to your frequently used messages and templates. Select text, press 's', and instantly search through your categorized message templates.
-
-## 🌟 Features
 
 ### Core Functionality
 
@@ -26,14 +24,10 @@ A powerful browser extension that streamlines your workflow by providing instant
 - Smart caching system
 - Cross-browser clipboard API support
 
-## 🚀 Installation
-
 ### Chrome Web Store
 
 1. Visit the [Chrome Web Store](https://chrome.google.com/webstore)
 2. Click "Add to Chrome"
-
-## 💻 Usage
 
 ### Basic Usage
 

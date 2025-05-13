@@ -16,9 +16,9 @@ let popupElement;
  */
 function initializePopup() {
   // Create main popup container
-  popupElement = document.createElement('div');
-  popupElement.id = 'quickcopy-popup';
-  popupElement.style.display = 'none';
+  popupElement = document.createElement("div");
+  popupElement.id = "quickcopy-popup";
+  popupElement.style.display = "none";
   document.body.appendChild(popupElement);
 
   // Create initial structure
@@ -35,12 +35,12 @@ function initializePopup() {
   `;
 
   // Add event listeners
-  const searchInput = popupElement.querySelector('#quickcopy-search');
-  const closeButton = popupElement.querySelector('.quickcopy-close-button');
+  const searchInput = popupElement.querySelector("#quickcopy-search");
+  const closeButton = popupElement.querySelector(".quickcopy-close-button");
 
   if (searchInput) {
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
         hidePopup();
         e.preventDefault();
         return;
@@ -50,7 +50,7 @@ function initializePopup() {
   }
 
   if (closeButton) {
-    closeButton.addEventListener('click', () => {
+    closeButton.addEventListener("click", () => {
       hidePopup();
     });
   }
@@ -64,7 +64,7 @@ initializePopup();
  */
 function isExtensionValid() {
   if (!isExtensionActive) return false;
-  
+
   try {
     chrome.runtime.getURL("");
     return true;
@@ -113,7 +113,7 @@ function showErrorPopup(message) {
  */
 function positionPopupCentered() {
   popupElement.style.display = "block";
-  
+
   // The CSS in the popup element (#quickcopy-popup) already handles centered positioning
   // through position: fixed and transform: translate(-50%, -50%)
   // So we don't need to do any manual positioning calculations
@@ -377,7 +377,7 @@ function showPopup(x, y, query) {
 function setupSearchInterface(messageData, initialQuery) {
   const searchBarHtml = `
     <div class="quickcopy-header">
-      <span>SpeedCopy</span>
+      <span>SwiftCopy</span>
       <button class="quickcopy-close-button">×</button>
     </div>
     <div class="quickcopy-search-container">
@@ -390,10 +390,11 @@ function setupSearchInterface(messageData, initialQuery) {
   updateMessageResults(messageData, initialQuery);
 
   const searchInput = document.getElementById("quickcopy-search");
-  const closeButton = popupElement.querySelector('.quickcopy-close-button');
+  const closeButton = popupElement.querySelector(".quickcopy-close-button");
 
   searchInput.focus();
-  searchInput.selectionStart = searchInput.selectionEnd = searchInput.value.length;
+  searchInput.selectionStart = searchInput.selectionEnd =
+    searchInput.value.length;
 
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
@@ -408,7 +409,7 @@ function setupSearchInterface(messageData, initialQuery) {
     updateMessageResults(messageData, this.value.trim().toLowerCase());
   });
 
-  closeButton.addEventListener('click', () => {
+  closeButton.addEventListener("click", () => {
     hidePopup();
   });
 }

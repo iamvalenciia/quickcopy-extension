@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // DOM element references
   const tabs = document.querySelectorAll(".tab");
   const tabContents = document.querySelectorAll(".tab-content");
   const jsonTextarea = document.getElementById("jsonText");
@@ -8,10 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const messagesContainer = document.getElementById("messagesContainer");
   const alertContainer = document.getElementById("alertContainer");
   const emptyState = messagesContainer?.querySelector(".empty-state");
-  const categoriesSummary = messagesContainer?.querySelector(".categories-summary");
+  const categoriesSummary = messagesContainer?.querySelector(
+    ".categories-summary"
+  );
   const categoryGrid = messagesContainer?.querySelector(".category-grid");
   const totalElement = messagesContainer?.querySelector(".total-count");
-  const totalMessagesElement = messagesContainer?.querySelector(".total-messages");
+  const totalMessagesElement =
+    messagesContainer?.querySelector(".total-messages");
   const categoryDetail = messagesContainer?.querySelector(".category-detail");
   const addCategoryButton = document.getElementById("addCategoryButton");
   const addMessageButton = document.getElementById("addMessageButton");
@@ -28,17 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const deleteModal = document.getElementById("deleteModal");
   const confirmDeleteButton = document.getElementById("confirmDeleteButton");
   const cancelDeleteButton = document.getElementById("cancelDeleteButton");
-  const messagesList = document.querySelector(".messages-list");
 
-  // Global variables
   let jsonData = null;
   let currentCategory = null;
   let pendingDelete = { category: null, index: null };
 
-  // Initialize - load stored data
   loadStoredData();
 
-  // Tab switching logic
   tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       // Remove active class from all tabs and contents
@@ -61,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // JSON textarea event listener
   jsonTextarea.addEventListener("input", () => {
     try {
       const jsonText = jsonTextarea.value.trim();
@@ -82,15 +79,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Save configuration button
   saveButton.addEventListener("click", () => {
     if (jsonData) {
       chrome.storage.local.set({ messageData: jsonData }, function () {
         if (chrome.runtime.lastError) {
-          showNotification(
-            chrome.runtime.lastError.message,
-            "error"
-          );
+          showNotification(chrome.runtime.lastError.message, "error");
         } else {
           showNotification("Configuration saved!", "success");
           loadStoredData();
@@ -99,15 +92,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Copy JSON button
   copyJsonButton.addEventListener("click", () => {
     if (jsonData) {
       const jsonString = JSON.stringify(jsonData, null, 2);
-      navigator.clipboard.writeText(jsonString)
+      navigator.clipboard
+        .writeText(jsonString)
         .then(() => {
           showNotification("JSON copied to clipboard", "success");
         })
-        .catch(err => {
+        .catch((err) => {
           showNotification(err.message, "error");
         });
     } else {
@@ -115,7 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Event Listeners
   if (addCategoryButton) {
     addCategoryButton.addEventListener("click", () => {
       if (categoryNameInput) categoryNameInput.value = "";
@@ -155,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (closeButtons) {
-    closeButtons.forEach(button => {
+    closeButtons.forEach((button) => {
       button.addEventListener("click", () => {
         if (categoryModal) categoryModal.style.display = "none";
         if (messageModal) messageModal.style.display = "none";
@@ -164,24 +156,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Delete modal event listeners
   if (confirmDeleteButton) {
     confirmDeleteButton.addEventListener("click", () => {
       if (pendingDelete.category !== null) {
         if (pendingDelete.index !== null) {
           // Delete single message
-          const messageToDelete = jsonData[pendingDelete.category][pendingDelete.index];
+          const messageToDelete =
+            jsonData[pendingDelete.category][pendingDelete.index];
           jsonData[pendingDelete.category].splice(pendingDelete.index, 1);
           saveData();
           displayCategoryMessages(pendingDelete.category);
-          showNotification(`Message deleted: "${messageToDelete.substring(0, 50)}${messageToDelete.length > 50 ? '...' : ''}"`, "success");
+          showNotification(
+            `Message deleted: "${messageToDelete.substring(0, 50)}${
+              messageToDelete.length > 50 ? "..." : ""
+            }"`,
+            "success"
+          );
         } else {
           // Delete entire category (cascade delete)
           const categoryToDelete = pendingDelete.category;
           delete jsonData[pendingDelete.category];
           saveData();
           displayStoredMessages();
-          showNotification(`Category "${formatCategoryName(categoryToDelete)}" deleted`, "success");
+          showNotification(
+            `Category "${formatCategoryName(categoryToDelete)}" deleted`,
+            "success"
+          );
         }
       }
       if (deleteModal) deleteModal.style.display = "none";
@@ -196,38 +196,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Function to validate JSON structure
-  function validateJsonStructure(data) {
-    // Check if object exists and has at least one property
-    if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
-      return false;
-    }
-
-    // Check that each property is an array
-    for (const key in data) {
-      if (!Array.isArray(data[key])) {
-        return false;
-      }
-
-      // Check that each array element is a string
-      if (data[key].some((item) => typeof item !== "string")) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  // Function to show alerts
-
   // Function to load stored data
   function loadStoredData() {
     chrome.storage.local.get("messageData", function (result) {
       if (chrome.runtime.lastError) {
-        showNotification(
-          chrome.runtime.lastError.message,
-          "error"
-        );
+        showNotification(chrome.runtime.lastError.message, "error");
         return;
       }
 
@@ -238,7 +211,6 @@ document.addEventListener("DOMContentLoaded", function () {
         saveButton.disabled = false;
 
         displayStoredMessages();
-
       } else {
         // If no data exists, initialize with empty object
         jsonData = {};
@@ -274,7 +246,9 @@ document.addEventListener("DOMContentLoaded", function () {
       categoryCard.innerHTML = `
         <div class="category-card-header">
           <div class="category-name">${formatCategoryName(category)}</div>
-          <div class="message-count">${messages.length} message${messages.length !== 1 ? "s" : ""}</div>
+          <div class="message-count">${messages.length} message${
+        messages.length !== 1 ? "s" : ""
+      }</div>
         </div>
         <div class="category-messages-actions">
           <button class="edit-category" data-category="${category}" title="Edit category">
@@ -288,26 +262,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
       categoryCard.addEventListener("click", (e) => {
         // Don't trigger category view if clicking on action buttons
-        if (!e.target.closest('.category-actions')) {
+        if (!e.target.closest(".category-actions")) {
           displayCategoryMessages(category);
         }
       });
 
       // Add event listeners for category actions
-      const editButton = categoryCard.querySelector('.edit-category');
-      const deleteButton = categoryCard.querySelector('.delete-category');
+      const editButton = categoryCard.querySelector(".edit-category");
+      const deleteButton = categoryCard.querySelector(".delete-category");
 
       if (editButton) {
         editButton.addEventListener("click", (e) => {
           e.stopPropagation();
-          const categoryToEdit = e.target.closest('button').dataset.category;
+          const categoryToEdit = e.target.closest("button").dataset.category;
           categoryNameInput.value = categoryToEdit;
           categoryModal.style.display = "flex";
-          
+
           // Remove any existing click handlers
           const newSaveButton = saveCategoryButton.cloneNode(true);
-          saveCategoryButton.parentNode.replaceChild(newSaveButton, saveCategoryButton);
-          
+          saveCategoryButton.parentNode.replaceChild(
+            newSaveButton,
+            saveCategoryButton
+          );
+
           // Add new click handler for editing
           newSaveButton.addEventListener("click", () => {
             const newCategoryName = categoryNameInput.value.trim();
@@ -316,7 +293,10 @@ document.addEventListener("DOMContentLoaded", function () {
               return;
             }
 
-            if (newCategoryName !== categoryToEdit && jsonData[newCategoryName]) {
+            if (
+              newCategoryName !== categoryToEdit &&
+              jsonData[newCategoryName]
+            ) {
               showNotification("Category name already exists", "error");
               return;
             }
@@ -325,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const messages = jsonData[categoryToEdit];
             delete jsonData[categoryToEdit];
             jsonData[newCategoryName] = messages;
-            
+
             saveData();
             categoryModal.style.display = "none";
             displayStoredMessages();
@@ -336,10 +316,13 @@ document.addEventListener("DOMContentLoaded", function () {
       if (deleteButton) {
         deleteButton.addEventListener("click", (e) => {
           e.stopPropagation();
-          const categoryToDelete = e.target.closest('button').dataset.category;
+          const categoryToDelete = e.target.closest("button").dataset.category;
           pendingDelete = { category: categoryToDelete, index: null };
-          deleteModal.querySelector('.modal-body p').textContent = 
-            `Are you sure you want to delete the category "${formatCategoryName(categoryToDelete)}" and all its messages?`;
+          deleteModal.querySelector(
+            ".modal-body p"
+          ).textContent = `Are you sure you want to delete the category "${formatCategoryName(
+            categoryToDelete
+          )}" and all its messages?`;
           deleteModal.style.display = "flex";
         });
       }
@@ -355,18 +338,43 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to format category name
-  function formatCategoryName(category) {
-    return category
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  }
-
-  // Function to display category messages
+  /**
+   * Displays messages for a specific category and sets up related event listeners
+   *
+   * @function displayCategoryMessages
+   * @param {string} category - The category key to display messages from
+   * @returns {void}
+   *
+   * @description
+   * This function handles the UI transition from category summary view to detailed category view.
+   * It populates the message list for the selected category, updates count information, and
+   * sets up event handlers for searching, editing, and deleting messages within the category.
+   *
+   * The function performs the following operations:
+   * - Validates required DOM elements and data are available
+   * - Updates the UI to show category details instead of summary
+   * - Populates message list with formatted content
+   * - Sets up search functionality for filtering messages
+   * - Configures event listeners for message editing and deletion
+   *
+   * @example
+   * // Display messages for the "greetings" category
+   * displayCategoryMessages("greetings");
+   *
+   * @requires
+   * - Global variables: categoryDetail, categoriesSummary, jsonData, currentCategory
+   * - DOM elements: .category-name, .message-count, .messages-list, .category-search
+   * - Functions: formatCategoryName, saveData, showNotification
+   */
   function displayCategoryMessages(category) {
-    if (!categoryDetail || !categoriesSummary || !jsonData || !jsonData[category]) return;
-    
+    if (
+      !categoryDetail ||
+      !categoriesSummary ||
+      !jsonData ||
+      !jsonData[category]
+    )
+      return;
+
     currentCategory = category;
     categoriesSummary.style.display = "none";
     categoryDetail.style.display = "block";
@@ -379,23 +387,24 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!categoryName || !messageCount || !messagesList || !searchInput) return;
 
     categoryName.textContent = formatCategoryName(category);
-    messageCount.textContent = `${jsonData[category].length} message${jsonData[category].length !== 1 ? "s" : ""}`;
+    messageCount.textContent = `${jsonData[category].length} message${
+      jsonData[category].length !== 1 ? "s" : ""
+    }`;
 
-    // Clear previous search
     searchInput.value = "";
 
-    // Function to render messages with optional filtering
     function renderMessages(filterQuery = "") {
       messagesList.innerHTML = "";
       const messages = jsonData[category] || [];
       const filteredMessages = filterQuery
-        ? messages.filter(message => message.toLowerCase().includes(filterQuery.toLowerCase()))
+        ? messages.filter((message) =>
+            message.toLowerCase().includes(filterQuery.toLowerCase())
+          )
         : messages;
 
       filteredMessages.forEach((message, filteredIndex) => {
-        // Find the original index in the unfiltered array
         const originalIndex = messages.indexOf(message);
-        
+
         const messageItem = document.createElement("div");
         messageItem.className = "message-item";
         messageItem.innerHTML = `
@@ -412,31 +421,31 @@ document.addEventListener("DOMContentLoaded", function () {
         messagesList.appendChild(messageItem);
       });
 
-      // Update message count to show filtered count
-      messageCount.textContent = `${filteredMessages.length} message${filteredMessages.length !== 1 ? "s" : ""}`;
+      messageCount.textContent = `${filteredMessages.length} message${
+        filteredMessages.length !== 1 ? "s" : ""
+      }`;
 
-      // Add event listeners for message actions
-      messagesList.querySelectorAll(".edit-message").forEach(button => {
+      messagesList.querySelectorAll(".edit-message").forEach((button) => {
         button.addEventListener("click", (e) => {
           const index = parseInt(e.target.closest("button").dataset.index);
           const originalMessage = jsonData[category][index];
           if (messageTextInput) messageTextInput.value = originalMessage;
           if (messageModal) messageModal.style.display = "flex";
-          
-          // Remove any existing click handlers
+
           if (saveMessageButton && saveMessageButton.parentNode) {
             const newSaveButton = saveMessageButton.cloneNode(true);
-            saveMessageButton.parentNode.replaceChild(newSaveButton, saveMessageButton);
-            
-            // Add new click handler
+            saveMessageButton.parentNode.replaceChild(
+              newSaveButton,
+              saveMessageButton
+            );
+
             newSaveButton.addEventListener("click", () => {
               const newMessage = messageTextInput.value.trim();
               if (!newMessage) {
                 showNotification("Please enter a message", "error");
                 return;
               }
-              
-              // Update the message at the specific index
+
               jsonData[category][index] = newMessage;
               saveData();
               if (messageModal) messageModal.style.display = "none";
@@ -446,24 +455,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       });
 
-      // Add event listeners for delete buttons
-      messagesList.querySelectorAll(".delete-message").forEach(button => {
+      messagesList.querySelectorAll(".delete-message").forEach((button) => {
         button.addEventListener("click", (e) => {
           const index = parseInt(e.target.closest("button").dataset.index);
           const messageToDelete = jsonData[category][index];
-          // Show custom delete modal with message preview
           pendingDelete = { category, index };
-          const deleteModalBody = deleteModal.querySelector('.modal-body p');
-          deleteModalBody.innerHTML = `Are you sure you want to delete this message?<br><br><strong>Preview:</strong><br><em>${messageToDelete.substring(0, 100)}${messageToDelete.length > 100 ? '...' : ''}</em>`;
+          const deleteModalBody = deleteModal.querySelector(".modal-body p");
+          deleteModalBody.innerHTML = `Are you sure you want to delete this message?<br><br><strong>Preview:</strong><br><em>${messageToDelete.substring(
+            0,
+            100
+          )}${messageToDelete.length > 100 ? "..." : ""}</em>`;
           if (deleteModal) deleteModal.style.display = "flex";
         });
       });
     }
 
-    // Initial render
     renderMessages();
 
-    // Add search input event listener
     searchInput.addEventListener("input", (e) => {
       renderMessages(e.target.value);
     });
@@ -513,24 +521,12 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // Only add new message if we're not in edit mode
     if (!messageModal.dataset.editMode) {
       jsonData[currentCategory].push(messageText);
       saveData();
       if (messageModal) messageModal.style.display = "none";
       displayCategoryMessages(currentCategory);
     }
-  }
-
-  // Function to save data to storage
-  function saveData() {
-    chrome.storage.local.set({ messageData: jsonData }, function () {
-      if (chrome.runtime.lastError) {
-        showNotification(chrome.runtime.lastError.message, "error");
-      } else {
-        showNotification("Changes saved", "success");
-      }
-    });
   }
 });
 
@@ -586,4 +582,54 @@ function showNotification(text, type = "default", duration = 2000) {
   }, duration);
 
   return alertElement;
+}
+
+/**
+ * Validates that a JSON object has the correct structure for the message data
+ * @param {Object} data - The JSON data to validate
+ * @returns {boolean} True if valid, false otherwise
+ */
+function validateJsonStructure(data) {
+  if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
+    return false;
+  }
+
+  for (const key in data) {
+    if (!Array.isArray(data[key])) {
+      return false;
+    }
+
+    if (data[key].some((item) => typeof item !== "string")) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Formats a category name from hyphenated lowercase to Title Case with spaces
+ * @param {string} category - The category name to format
+ * @returns {string} The formatted category name
+ */
+function formatCategoryName(category) {
+  return category
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+/**
+ * Saves data to chrome.storage.local
+ * @param {Object} jsonData - The data to save
+ * @param {Function} callback - Optional callback function
+ */
+function saveData() {
+  chrome.storage.local.set({ messageData: jsonData }, function () {
+    if (chrome.runtime.lastError) {
+      showNotification(chrome.runtime.lastError.message, "error");
+    } else {
+      showNotification("Changes saved", "success");
+    }
+  });
 }

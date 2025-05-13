@@ -54,49 +54,6 @@ A powerful browser extension that streamlines your workflow by providing instant
 - `s`: Open search interface
 - `Esc`: Close popup
 
-## 🔧 Configuration
-
-### Message Categories
-
-- Create custom categories
-- Add messages to categories
-- Reorder categories
-- Delete unused categories
-
-### Import/Export
-
-- Export all templates as JSON
-- Import templates from JSON
-- Share templates with team members
-- Backup your templates
-
-## 🛠️ Development
-
-### Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-- Chrome browser
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/swiftcopy.git
-
-# Install dependencies
-npm install
-
-# Build the extension
-npm run build
-
-# Load the extension in Chrome
-# Go to chrome://extensions/
-# Enable Developer mode
-# Click "Load unpacked"
-# Select the 'dist' directory
-```
-
 ### Project Structure
 
 ```

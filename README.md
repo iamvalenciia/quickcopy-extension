@@ -25,7 +25,7 @@ A powerful browser extension that streamlines your workflow by providing instant
 
 ### Chrome Web Store
 
-1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/fenjcagcnjlhhpeccfopnhiieelcilbo?utm_source=item-share-cb){target="_blank"}
+1. Visit the [Chrome Web Store](https://chromewebstore.google.com/detail/fenjcagcnjlhhpeccfopnhiieelcilbo?utm_source=item-share-cb)
 2. Click "Add to Chrome"
 
 ### Basic Usage

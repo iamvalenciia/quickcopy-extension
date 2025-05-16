@@ -528,108 +528,111 @@ document.addEventListener("DOMContentLoaded", function () {
       displayCategoryMessages(currentCategory);
     }
   }
-});
 
-/**
- * Shows a temporary notification on the screen
- * @param {string} text - The text to display in the notification
- * @param {string} type - The notification type ('default', 'success', 'error')
- * @param {number} duration - Duration in milliseconds the notification will show (optional, default: 3000ms)
- */
-function showNotification(text, type = "default", duration = 2000) {
-  // Get the alert container element
-  const alertContainer = document.getElementById("alertContainer");
-  if (!alertContainer) {
-    console.error("Alert container element not found!");
-    return null;
-  }
-
-  // Create a new alert element
-  const alertElement = document.createElement("div");
-
-  // Set the class based on type
-  alertElement.className = "alert";
-
-  if (type === "success") {
-    alertElement.classList.add("alert-success");
-  } else if (type === "error") {
-    alertElement.classList.add("alert-danger");
-  } else {
-    alertElement.classList.add("alert-default");
-  }
-
-  // Truncate text if too long
-  const displayText = text.length > 100 ? text.substring(0, 100) + "..." : text;
-
-  // Set appropriate prefix
-  let prefix = "";
-  if (text.toLowerCase().startsWith("copy")) prefix = "Copied";
-
-  // Set content
-  alertElement.textContent = prefix ? `${prefix}: ${displayText}` : displayText;
-
-  // Add to container
-  alertContainer.appendChild(alertElement);
-
-  // Remove after the specified duration
-  setTimeout(() => {
-    alertElement.classList.add("alert-fade-out");
-    setTimeout(() => {
-      if (alertElement.parentNode) {
-        alertContainer.removeChild(alertElement);
-      }
-    }, 300);
-  }, duration);
-
-  return alertElement;
-}
-
-/**
- * Validates that a JSON object has the correct structure for the message data
- * @param {Object} data - The JSON data to validate
- * @returns {boolean} True if valid, false otherwise
- */
-function validateJsonStructure(data) {
-  if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
-    return false;
-  }
-
-  for (const key in data) {
-    if (!Array.isArray(data[key])) {
-      return false;
+  /**
+   * Shows a temporary notification on the screen
+   * @param {string} text - The text to display in the notification
+   * @param {string} type - The notification type ('default', 'success', 'error')
+   * @param {number} duration - Duration in milliseconds the notification will show (optional, default: 3000ms)
+   */
+  function showNotification(text, type = "default", duration = 2000) {
+    // Get the alert container element
+    const alertContainer = document.getElementById("alertContainer");
+    if (!alertContainer) {
+      console.error("Alert container element not found!");
+      return null;
     }
 
-    if (data[key].some((item) => typeof item !== "string")) {
-      return false;
-    }
-  }
+    // Create a new alert element
+    const alertElement = document.createElement("div");
 
-  return true;
-}
+    // Set the class based on type
+    alertElement.className = "alert";
 
-/**
- * Formats a category name from hyphenated lowercase to Title Case with spaces
- * @param {string} category - The category name to format
- * @returns {string} The formatted category name
- */
-function formatCategoryName(category) {
-  return category
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-/**
- * Saves data to chrome.storage.local
- * @param {Object} jsonData - The data to save
- * @param {Function} callback - Optional callback function
- */
-function saveData() {
-  chrome.storage.local.set({ messageData: jsonData }, function () {
-    if (chrome.runtime.lastError) {
-      showNotification(chrome.runtime.lastError.message, "error");
+    if (type === "success") {
+      alertElement.classList.add("alert-success");
+    } else if (type === "error") {
+      alertElement.classList.add("alert-danger");
     } else {
-      showNotification("Changes saved", "success");
+      alertElement.classList.add("alert-default");
     }
-  });
-}
+
+    // Truncate text if too long
+    const displayText =
+      text.length > 100 ? text.substring(0, 100) + "..." : text;
+
+    // Set appropriate prefix
+    let prefix = "";
+    if (text.toLowerCase().startsWith("copy")) prefix = "Copied";
+
+    // Set content
+    alertElement.textContent = prefix
+      ? `${prefix}: ${displayText}`
+      : displayText;
+
+    // Add to container
+    alertContainer.appendChild(alertElement);
+
+    // Remove after the specified duration
+    setTimeout(() => {
+      alertElement.classList.add("alert-fade-out");
+      setTimeout(() => {
+        if (alertElement.parentNode) {
+          alertContainer.removeChild(alertElement);
+        }
+      }, 300);
+    }, duration);
+
+    return alertElement;
+  }
+
+  /**
+   * Validates that a JSON object has the correct structure for the message data
+   * @param {Object} data - The JSON data to validate
+   * @returns {boolean} True if valid, false otherwise
+   */
+  function validateJsonStructure(data) {
+    if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
+      return false;
+    }
+
+    for (const key in data) {
+      if (!Array.isArray(data[key])) {
+        return false;
+      }
+
+      if (data[key].some((item) => typeof item !== "string")) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Formats a category name from hyphenated lowercase to Title Case with spaces
+   * @param {string} category - The category name to format
+   * @returns {string} The formatted category name
+   */
+  function formatCategoryName(category) {
+    return category
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  /**
+   * Saves data to chrome.storage.local
+   * @param {Object} jsonData - The data to save
+   * @param {Function} callback - Optional callback function
+   */
+  function saveData() {
+    chrome.storage.local.set({ messageData: jsonData }, function () {
+      if (chrome.runtime.lastError) {
+        showNotification(chrome.runtime.lastError.message, "error");
+      } else {
+        showNotification("Changes saved", "success");
+      }
+    });
+  }
+});

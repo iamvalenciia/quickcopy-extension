@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SwiftCopy - Smart Message Template Manager",
   "version": "1.0.6",
-  "description": "Select text, press 's', and instantly search/copy your saved messages. Perfect for support, sales, and quick responses.",
+  "description": "Streamline your workflow with a browser extension for quick access to categorized message templates. Press 's' to search instantly.",
   "icons": {
     "16": "/assets/icon.png",
     "48": "/assets/icon.png",

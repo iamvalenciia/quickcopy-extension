@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         saveButton.disabled = true;
         return;
       }
+      saveButton.disabled = false;
     } catch (error) {
       showNotification("Error parsing JSON: " + error.message, "error");
       saveButton.disabled = true;
